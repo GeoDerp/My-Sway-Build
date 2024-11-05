@@ -1,7 +1,7 @@
 # Geo's Fedora config for sway
 
 #font
-font Driod Sans Regular 9
+font Driod Sans Regular 7
 
 ### Variables
 
@@ -12,7 +12,8 @@ set $alt shift
 #WALLPAPER: for here to change wallpaper
 set $wall {wallpaper}
 set $lock {wallpaper}.lock #.lock is the name convention for the generated blured image 
-
+# command to create the lock blur image
+exec magick $wall -gaussian-blur 0x7 $lock
 
 # Home row direction keys, like vim
 set $left h
@@ -20,7 +21,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term gnome-terminal --hide-menubar
+set $term kitty
 #set launcher 
 set $menu --no-startup-id ulauncher-toggle
 
@@ -34,7 +35,8 @@ output * bg $wall stretch
 
 
 
-# displaye output example (use `swaymsg -t get_outputs` to find names)
+# display output example (use `swaymsg -t get_outputs` to find names)
+# set scale to preference 
 #output HDMI-A-1 resolution 1920x1080 position 2560,45
 #output DVI-D-1 resolution 2560x1440 position 0,0
 
@@ -87,7 +89,10 @@ bindsym $mod+f exec nautilus
 bindsym $mod+$alt+s exec gnome-control-center 
 
 #google chrome
-bindsym $mod+$alt+c exec google-chrome
+bindsym $mod+$alt+c exec firefox
+
+#google chrome
+#bindsym $mod+$alt+c exec firefox
 
 #Run Atom
 bindsym $mod+$alt+a exec atom-beta -d
@@ -355,9 +360,9 @@ bar {{
 #bindsym XF86AudioLowerVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{{print $3}}') -5%
 #bindsym XF86AudioMute exec pactl set-sink-mute $(pacmd list-sinks |awk '/* index:/{{print $3}}') toggle
 #pipwire
-bindsym XF86AudioRaiseVolume exec amixer sset Master 5%+ 
-bindsym XF86AudioLowerVolume exec amixer sset Master 5%- 
-bindsym XF86AudioMute exec amixer set Master toggle
+bindsym XF86AudioRaiseVolume exec pactl -- set-sink-volume 0 +5%
+bindsym XF86AudioLowerVolume exec pactl -- set-sink-volume 0 -5%
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 bindsym --locked XF86AudioStop exec playerctl stop
 bindsym --locked XF86AudioPlay exec playerctl play-pause
 bindsym --locked XF86AudioNext exec playerctl next

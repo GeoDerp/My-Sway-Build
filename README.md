@@ -1,6 +1,8 @@
 # My-Sway-Build
 My second sway build, Maintained using Ansible using WPGTK for rice
 
+![example](/img/screenshot.jpg)
+
 # Work In Progress
 
 ## Things to do
