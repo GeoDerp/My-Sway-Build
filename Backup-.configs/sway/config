@@ -79,6 +79,7 @@ bindsym Mod4+$alt+l exit
 
 #lock
 bindsym Mod4+l exec $swaylock 
+bindsym $mod+$alt+l exec gnome-session-quit
 
 ## Custom speshial keybindings (personal preference)
 
