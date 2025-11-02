@@ -1,7 +1,8 @@
 # Geo's Fedora config for sway
+# Managed by Ansible - wpgtk integrated
 
-#font
-font Driod Sans Regular 7
+# Font configuration
+font Droid Sans Regular 7
 
 ### Variables
 
@@ -9,11 +10,13 @@ font Driod Sans Regular 7
 set $mod Mod1
 set $alt shift
 
-#WALLPAPER: for here to change wallpaper
+# Wallpaper configuration (wpgtk managed)
+# {wallpaper} is replaced by wpgtk when applying theme
 set $wall {wallpaper}
-set $lock {wallpaper}.lock #.lock is the name convention for the generated blured image 
-# command to create the lock blur image
-exec magick $wall -gaussian-blur 0x7 $lock
+set $lock {wallpaper}.lock  # .lock is the name convention for the generated blurred image
+
+# Command to create the blurred lock screen image
+exec magick "$wall" -gaussian-blur 0x7 "$lock"
 
 # Home row direction keys, like vim
 set $left h
@@ -22,16 +25,18 @@ set $up k
 set $right l
 # Your preferred terminal emulator
 set $term kitty
-#set launcher 
+
+# Application launcher
 set $menu --no-startup-id ulauncher-toggle
 
 
-### Output 
+### Output configuration
 
-#set wallpaper
-exec wpg -s $wall
-# This is only needed if your wanting specific requirements for your wallpaper EX: stretch, fill, fit, center, tile
-output * bg $wall stretch
+# Set wallpaper using wpgtk
+exec wpg -s "$wall"
+
+# Background options: stretch, fill, fit, center, tile
+output * bg "$wall" stretch
 
 
 
@@ -40,13 +45,12 @@ output * bg $wall stretch
 #output HDMI-A-1 resolution 1920x1080 position 2560,45
 #output DVI-D-1 resolution 2560x1440 position 0,0
 
-# fix touchpad scroll 
+# Touchpad configuration
 input type:touchpad {{
-    tap enabled
-    natural_scroll enabled
-    dwt enabled
-    natural_scroll enabled
-    middle_emulation enabled
+    tap enabled                    # Enable tap to click
+    natural_scroll enabled         # Natural scrolling (inverted)
+    dwt enabled                    # Disable while typing
+    middle_emulation enabled       # Middle click emulation
 }}
 
 
@@ -71,46 +75,42 @@ bindsym XF86Search exec $menu
 # mouse button for dragging.
 floating_modifier $mod normal
 
-# reload the configuration file
-bindsym $mod+$alt+r exec killall ulauncher & sway reload && wpg -s $wall && ulauncher --hide-window 
+# Reload the configuration file and refresh ulauncher
+bindsym $mod+$alt+r exec killall ulauncher && sway reload && wpg -s "$wall" && ulauncher --hide-window 
 
-# exit sway (logs you out of your wayland session)
+# Exit sway (logs you out of your Wayland session)
 bindsym Mod4+$alt+l exit
 
-#lock
-bindsym Mod4+l exec $swaylock 
+# Lock screen
+bindsym Mod4+l exec $swaylock
 bindsym $mod+$alt+l exec sway exit
 
-## Custom speshial keybindings (personal preference)
+## Custom special keybindings (personal preference)
 
-#opening file explorer
+# Open file explorer
 bindsym $mod+f exec nautilus
 
-#gnome settings
-bindsym $mod+$alt+s exec gnome-control-center 
+# GNOME settings
+bindsym $mod+$alt+s exec gnome-control-center
 
-#google chrome
+# Web browser
 bindsym $mod+$alt+c exec firefox
 
-#google chrome
-#bindsym $mod+$alt+c exec firefox
-
-#Run Atom
-bindsym $mod+$alt+a exec atom-beta -d
-
-#Run Visual Code/VSCodium
+# Visual Studio Code
 bindsym $mod+$alt+Control+v exec code
 
-#Run keepassxc
+# KeePassXC password manager
 bindsym $mod+$alt+p exec keepassxc
 
-#DELETE ALL, for when your in danger
-bindsym $mod+$alt+Control+d exec rm -frdv ~/
+# WARNING: Dangerous command - DELETE ALL files in home directory
+# bindsym $mod+$alt+Control+d exec rm -frdv ~/
+# This keybinding is commented out for safety
 
-#Change Wallpaper to random saved wallpaper/colorscheme (To save an wallpaper, either use *wpg -a (dir to img)* or *wpg* to open up the GUI)
+# Change wallpaper to random saved wallpaper/colorscheme
+# To save a wallpaper, use: wpg -a <path_to_image> or wpg (GUI)
 bindsym $mod+$alt+w exec wpg -m
 
-#If you want it to record on a set output add -o "output name"
+# Screen recording (add -o "output_name" for specific output)
 bindsym $mod+Control+r exec gnome-terminal -- wf-recorder -f $(xdg-user-dir VIDEOS)/$(date +'%Y-%m-%d-%H%M%S_wf-recorder.mp4')
 
 ## Moving around:
@@ -178,22 +178,22 @@ bindsym $mod+$alt+0 move container to workspace $work10
 # Note: workspaces can have any name you want, not just numbers.
 # We just use 1-10 as the default.
 
-## Workspace Assignments (Defult application workspace's )
-### note: use app_id instad of class for help with Wayland support
+## Workspace Assignments (Default application workspaces)
+### Note: use app_id instead of class for better Wayland support
 
-# Main 
+# Main workspace - terminals
 assign [class="kitty"] $work1
 assign [class="gnome-terminal"] $work1
 assign [class="gnome-software"] $work1
 assign [class="terminology"] $work1
 
-#Web
+# Web workspace - browsers
 assign [class="Google-chrome"] $work2
 assign [class="Google-chrome-beta"] $work2
 assign [class="Google-chrome-unstable"] $work2
 assign [class="Firefox"] $work2
 
-#Editor 
+# Editor workspace - code editors
 assign [class="Atom"] $work3
 assign [class="atom"] $work3
 assign [class="VSCodium"] $work3
@@ -202,7 +202,7 @@ assign [class="gedit"] $work3
 assign [class="Atom-beta"] $work3
 assign [class="Eclipse"] $work3
 
-#Music
+# Music workspace - media players
 assign [class="Rhythmbox"] $work4
 assign [class="Spotify"] $work4
 assign [class="Spotify Free"] $work4
@@ -211,26 +211,26 @@ assign [class="rhythmbox"] $work4
 assign [class="podcasts"] $work4
 assign [class="pulseaudio"] $work4
 
-#Chat
+# Chat workspace - messaging apps
 assign [class="irssi"] $work5
 assign [class="Franz"] $work5
 assign [class="mail"] $work5
 assign [class="Hexchat"] $work5
 
-#Security
+# Security workspace - password managers & security tools
 assign [class="keepassxc"] $work6
 assign [class="Wireshark"] $work6
 
-#Files (id dont like then remove)
+# Files workspace
 assign [app_id="org.gnome.Nautilus"] $work7
 
-#Art
+# Art workspace - creative apps
 assign [class="darktable"] $work8
 assign [class="Gimp-2.10"] $work8
 assign [class="krita"] $work8
 assign [app_id="org.inkscape.Inkscape"] $work8
 
-#Work
+# Work workspace - office apps
 assign [class="libreoffice"] $work9
 assign [class="libreoffice-emailmerge"] $work9
 assign [class="libreoffice-graphicfilter"] $work9
@@ -240,19 +240,16 @@ assign [class="libreoffice-writer"] $work9
 assign [class="libreoffice-startcenter"] $work9
 assign [class="libreoffice-base"] $work9
 assign [class="libreoffice-pyuno"] $work9
-assign [class="libreoffice"] $work9
 assign [class="gnome-documents"] $work9
 assign [class="gnome-boxes"] $work9
-assign [class="gnome-boxes"] $work9
 
-#Gaming (0)
+# Gaming workspace (0)
 assign [class="Steam"] $work10
 assign [class="Wine"] $work10
 assign [class="Games"] $work10
 assign [class="RetroArch"] $work10
 
-#Other (floating)
-# for_window [app_id="ulauncher-toggle"] floating enable border none
+# Floating windows configuration
 for_window [app_id="ulauncher"] border none floating enable
 
 
@@ -272,10 +269,10 @@ bindsym $mod+e layout toggle split
 # Make the current focus fullscreen
 bindsym $mod+$alt+f fullscreen
 
-#change from workstations (WIN style :D)
+# Change workspace (Windows style Alt+Tab behavior)
 bindsym Mod1+Tab workspace next
 bindsym Mod1+Shift+Tab workspace prev
-    #If that dose not work try bindcode Mod1+23 workspace next & bindcode Mod1+Shift+23 workspace prev
+# Alternative: bindcode Mod1+23 workspace next & bindcode Mod1+Shift+23 workspace prev
 
 # Toggle the current focus between tiling and floating mode
 bindsym $mod+$alt+space floating toggle
@@ -323,7 +320,7 @@ mode "resize" {{
 }}
 bindsym $mod+r mode "resize"
 
-#Window Colours
+# Window colors (wpgtk managed)
 set $bg-color            {active}
 set $inactive-bg-color   {inactive}
 set $text-color          {color15}
@@ -331,87 +328,91 @@ set $inactive-text-color {color15}
 set $urgent-bg-color     {color2}
 set $indicator-color     {color10}
 
-# window config
+# Window configuration - colors and borders
 #                       border              background         text                 indicator        child_border
 client.focused          $bg-color           $bg-color          $text-color          $indicator-color $bg-color
 client.unfocused        $inactive-bg-color  $inactive-bg-color $inactive-text-color $indicator-color $bg-color
 client.focused_inactive $inactive-bg-color  $inactive-bg-color $inactive-text-color $indicator-color $bg-color
 client.urgent           $urgent-bg-color    $urgent-bg-color   $text-color          $indicator-color $bg-color
 
-#gaps (rim arround the windows)
+# Gaps between windows
 gaps inner 5
 gaps outer 8
 
 
-# Startup commands 
+# Startup commands and services
 include /etc/sway/config.d/*
-#exec --no-startup-id waybar &
+
+# Launch ulauncher on startup
 exec ulauncher
+
+# Idle and lock configuration
 exec swayidle -w timeout 300 '$swaylock' timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep '$swaylock'
 
-#Running Waybar (SwayBar alternative)
+# Running Waybar (SwayBar alternative)
 bar {{
     swaybar_command waybar
 }}
 
-#For the laptop fucntion keys
-#(sudo dnf install brightnessctl -y if your using an laptop for chaning brightness)
-#pulseaudio
-#bindsym XF86AudioRaiseVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{{print $3}}') +5%
-#bindsym XF86AudioLowerVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{{print $3}}') -5%
-#bindsym XF86AudioMute exec pactl set-sink-mute $(pacmd list-sinks |awk '/* index:/{{print $3}}') toggle
-#pipwire
+# Laptop function keys configuration
+# Note: brightnessctl must be installed for brightness controls
+
+# Audio controls (PipeWire)
 bindsym XF86AudioRaiseVolume exec pactl -- set-sink-volume 0 +5%
 bindsym XF86AudioLowerVolume exec pactl -- set-sink-volume 0 -5%
 bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+
+# Media player controls
 bindsym --locked XF86AudioStop exec playerctl stop
 bindsym --locked XF86AudioPlay exec playerctl play-pause
 bindsym --locked XF86AudioNext exec playerctl next
 bindsym --locked XF86AudioPrev exec playerctl previous
+
+# Brightness controls
 bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+
+# Screenshot utilities
 bindsym print exec grim $(xdg-user-dir PICTURES)/$(date +'%Y-%m-%d-%H%M%S_grim.png')
-bindsym print+$alt exec "grim -g "$(slurp)" $(xdg-user-dir PICTURES)/$(date +'%Y-%m-%d-%H%M%S_grim.png')"
+bindsym print+$alt exec "grim -g \"$(slurp)\" $(xdg-user-dir PICTURES)/$(date +'%Y-%m-%d-%H%M%S_grim.png')"
 
-
-#set sway lock vars 
-#--------------------------
+# Swaylock configuration (wpgtk managed colors)
+# Variables for swaylock styling
 set $bshlcolor --bs-hl-color "{color1}"
 set $capslockbshlcolor --caps-lock-bs-hl-color "{color4}"
 set $capslockkeyhlcolor --caps-lock-key-hl-color "{inactive}"
 
-set $insidecolor --inside-color "{color2}80"           
-set $insideclearcolor --inside-clear-color "{color3}80"    
+set $insidecolor --inside-color "{color2}80"
+set $insideclearcolor --inside-clear-color "{color3}80"
 set $insidevercolor --inside-ver-color "{color5}80"
-set $insidewrongcolor --inside-wrong-color "{color7}80"  
+set $insidewrongcolor --inside-wrong-color "{color7}80"
 
-set $keyhlcolor --key-hl-color "{color2}"         
+set $keyhlcolor --key-hl-color "{color2}"
 
-set $linecolor --line-color "{color15}"           
-set $lineclearcolor --line-clear-color "{color3}"    
+set $linecolor --line-color "{color15}"
+set $lineclearcolor --line-clear-color "{color3}"
 set $linecapslockcolor --line-caps-lock-color "{color4}"
-set $linevercolor --line-ver-color "{color5}"     
-set $linewrongcolor --line-wrong-color "{color7}"      
+set $linevercolor --line-ver-color "{color5}"
+set $linewrongcolor --line-wrong-color "{color7}"
 
-set $ringcolor --ring-color "{color2}"          
-set $ringclearcolor --ring-clear-color "{color3}"    
-set $ringcapslockcolor --ring-caps-lock-color "{color4}" 
-set $ringvercolor --ring-ver-color "{color5}"      
-set $ringwrongcolor --ring-wrong-color "{color7}"   
+set $ringcolor --ring-color "{color2}"
+set $ringclearcolor --ring-clear-color "{color3}"
+set $ringcapslockcolor --ring-caps-lock-color "{color4}"
+set $ringvercolor --ring-ver-color "{color5}"
+set $ringwrongcolor --ring-wrong-color "{color7}"
 
-set $separatorcolor --separator-color "{inactive}"     
+set $separatorcolor --separator-color "{inactive}"
 
-set $textcolor --text-color "{active}"    
-set $textvercolor --text-ver-color "{active}"  
+set $textcolor --text-color "{active}"
+set $textvercolor --text-ver-color "{active}"
 set $textclearcolor --text-clear-color "{active}"
 set $textcapslockcolor --text-caps-lock-color "{active}"
-set $textwrongcolor --text-wrong-color "{active}"       
+set $textwrongcolor --text-wrong-color "{active}"
 
 set $indicatorradius --indicator-radius 180
 set $scaling -s fill
 
-#Swaylock command  
-set $swaylock swaylock -i $lock $scaling $bshlcolor $capslockbshlcolor $capslockkeyhlcolor $insidecolor $insideclearcolor $insidevercolor $insidewrongcolor $keyhlcolor $linecolor $lineclearcolor $linecapslockcolor $linevercolor $linewrongcolor $ringcolor $ringclearcolor $ringcapslockcolor $ringvercolor $ringwrongcolor $separatorcolor $textcolor $textvercolor $textclearcolor $textcapslockcolor $textwrongcolor $indicatorradius --ignore-empty-password
-#set $swaylock swaylock -i $lock $scaling $bs-hl-color $caps-lock-bs-hl-color $caps-lock-key-hl-color $inside-color  $inside-clear-color $inside-ver-color $inside-wrong-color $key-hl-color $line-color $line-clear-color $line-caps-lock-color $line-ver-color $line-wrong-color $ring-color $ring-clear-color $ring-caps-lock-color $ring-ver-color $ring-wrong-color $separator-color $text-color $text-ver-color $text-clear-color $text-caps-lock-color $text-wrong-color $indicator-radius $ignore-empty-password
+# Swaylock command with all styling options
+set $swaylock swaylock -i "$lock" $scaling $bshlcolor $capslockbshlcolor $capslockkeyhlcolor $insidecolor $insideclearcolor $insidevercolor $insidewrongcolor $keyhlcolor $linecolor $lineclearcolor $linecapslockcolor $linevercolor $linewrongcolor $ringcolor $ringclearcolor $ringcapslockcolor $ringvercolor $ringwrongcolor $separatorcolor $textcolor $textvercolor $textclearcolor $textcapslockcolor $textwrongcolor $indicatorradius --ignore-empty-password
 
 

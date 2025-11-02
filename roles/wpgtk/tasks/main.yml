@@ -1,0 +1,40 @@
+---
+- name: Install wpgtk dependencies
+  package:
+    name:
+      - python3-pip
+      - python3-setuptools
+      - python3-wheel
+    state: present
+  become: yes
+
+- name: Install wpgtk via pip (user install)
+  pip:
+    name: wpgtk
+    state: present
+    extra_args: --user
+  become: no
+
+- name: Ensure wpgtk config directory exists
+  file:
+    path: "{{ wpgtk_home }}/.config/wpg"
+    state: directory
+    mode: '0755'
+  become: no
+
+- name: Install wpgtk templates for various applications
+  shell: |
+    {{ wpgtk_home }}/.local/lib/python*/site-packages/wpgtk/misc/wpg-install.sh -gGi
+  args:
+    creates: "{{ wpgtk_home }}/.themes"
+  become: no
+  ignore_errors: yes
+
+- name: Set GNOME theme to linea-nord-color (if using GNOME)
+  shell: |
+    gsettings set org.gnome.desktop.wm.preferences theme "linea-nord-color"
+    gsettings set org.gnome.desktop.interface theme "linea-nord-color"
+    gsettings set org.gnome.desktop.interface icon-theme "Flattcolor-dark"
+  become: no
+  ignore_errors: yes
+  when: lookup('env', 'XDG_CURRENT_DESKTOP') == 'GNOME'

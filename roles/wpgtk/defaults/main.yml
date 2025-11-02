@@ -1,0 +1,4 @@
+---
+# wpgtk installation and configuration
+wpgtk_user: "{{ ansible_user_id }}"
+wpgtk_home: "{{ lookup('env', 'HOME') }}"

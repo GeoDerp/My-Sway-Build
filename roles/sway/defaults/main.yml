@@ -1,0 +1,3 @@
+---
+# Sway window manager configuration
+sway_config_dir: "{{ lookup('env', 'HOME') }}/.config/sway"
