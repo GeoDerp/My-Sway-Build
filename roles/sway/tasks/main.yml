@@ -4,19 +4,20 @@
     path: "{{ sway_config_dir }}"
     state: directory
     mode: '0755'
-  become: no
+  become: false
 
 - name: Copy sway configuration from backup
   copy:
     src: "{{ playbook_dir }}/Backup-.configs/sway/config"
     dest: "{{ sway_config_dir }}/config"
     mode: '0644'
-  become: no
+  become: false
 
 - name: Register sway config as wpgtk template
   shell: wpg -ta "{{ sway_config_dir }}/config"
-  become: no
+  become: false
   failed_when: false
+  changed_when: false
   register: wpgtk_sway_result
 
 - name: Report wpgtk registration status for Sway
@@ -28,5 +29,5 @@
     path: "{{ lookup('env', 'HOME') }}/.bash_profile"
     line: 'if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then exec sway; fi'
     create: yes
-  become: no
+  become: false
   when: false  # Set to true if you want auto-start sway on login

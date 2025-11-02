@@ -3,62 +3,81 @@
   dnf:
     name: ulauncher
     state: present
-  when: ansible_facts['distribution'] == 'Fedora'
-  become: yes
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - system_pkg_mgr in dnf_like_pkg_mgrs
+  become: true
+
+- name: Layer ulauncher (rpm-ostree)
+  community.general.rpm_ostree_pkg:
+    name: ulauncher
+    state: present
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
+  become: true
 
 - name: Install ulauncher (Ubuntu/Debian)
   apt:
     name: ulauncher
     state: present
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
-  become: yes
+  become: true
+
+- name: Install ulauncher (openSUSE)
+  zypper:
+    name: ulauncher
+    state: present
+  when: ansible_facts['os_family'] == 'Suse'
+  become: true
 
 - name: Install ulauncher (Arch)
   pacman:
     name: ulauncher
     state: present
   when: ansible_facts['distribution'] == 'Archlinux'
-  become: yes
+  become: true
 
 - name: Ensure ulauncher config directory exists
   file:
     path: "{{ ulauncher_config_dir }}"
     state: directory
     mode: '0755'
-  become: no
+  become: false
 
 - name: Ensure ulauncher theme directory exists
   file:
     path: "{{ ulauncher_theme_dir }}"
     state: directory
     mode: '0755'
-  become: no
+  become: false
 
 - name: Copy ulauncher wpgtk theme manifest
   copy:
     src: "{{ playbook_dir }}/Backup-.configs/ulauncher/user-themes/wpgtk-theme/manifest.json"
     dest: "{{ ulauncher_theme_dir }}/manifest.json"
     mode: '0644'
-  become: no
+  become: false
 
 - name: Copy ulauncher wpgtk theme.css
   copy:
     src: "{{ playbook_dir }}/Backup-.configs/ulauncher/user-themes/wpgtk-theme/theme.css"
     dest: "{{ ulauncher_theme_dir }}/theme.css"
     mode: '0644'
-  become: no
+  become: false
 
 - name: Copy ulauncher wpgtk theme-gtk-3.20.css
   copy:
     src: "{{ playbook_dir }}/Backup-.configs/ulauncher/user-themes/wpgtk-theme/theme-gtk-3.20.css"
     dest: "{{ ulauncher_theme_dir }}/theme-gtk-3.20.css"
     mode: '0644'
-  become: no
+  become: false
 
 - name: Register ulauncher theme.css as wpgtk template
   shell: wpg -ta "{{ ulauncher_theme_dir }}/theme.css"
-  become: no
+  become: false
   failed_when: false
+  changed_when: false
   register: wpgtk_ulauncher_result
 
 - name: Report wpgtk registration status for Ulauncher

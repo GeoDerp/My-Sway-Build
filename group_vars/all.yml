@@ -7,6 +7,21 @@ target_user: "{{ ansible_user_id }}"
 user_home: "{{ lookup('env', 'HOME') }}"
 config_dir: "{{ user_home }}/.config"
 
+# Package manager detection
+raw_pkg_mgr: "{{ ansible_facts.get('pkg_mgr', ansible_pkg_mgr | default('')) }}"
+system_pkg_mgr: "{{ raw_pkg_mgr | default('') | lower }}"
+rpm_ostree_like_pkg_mgrs:
+  - rpm-ostree
+  - atomic_container
+  - atomic
+  - ostree
+dnf_like_pkg_mgrs:
+  - dnf
+  - dnf4
+  - dnf5
+  - yum
+  - microdnf
+
 # wpgtk configuration
 wpgtk_autostart: yes
 wpgtk_install_templates: yes

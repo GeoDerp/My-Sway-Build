@@ -20,8 +20,36 @@
       - fontawesome-fonts
       - gnome-themes-extra
     state: present
-  when: ansible_facts['distribution'] == 'Fedora'
-  become: yes
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - system_pkg_mgr in dnf_like_pkg_mgrs
+  become: true
+
+- name: Layer base system dependencies (rpm-ostree)
+  community.general.rpm_ostree_pkg:
+    name:
+      - sway
+      - swaylock
+      - swayidle
+      - waybar
+      - python3
+      - python3-pip
+      - ImageMagick
+      - brightnessctl
+      - playerctl
+      - grim
+      - slurp
+      - wf-recorder
+      - wl-clipboard
+      - mako
+      - git
+      - fontawesome-fonts
+      - gnome-themes-extra
+    state: present
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
+  become: true
 
 - name: Install base system dependencies (Debian/Ubuntu)
   apt:
@@ -46,7 +74,32 @@
     state: present
     update_cache: yes
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
-  become: yes
+  become: true
+
+- name: Install base system dependencies (openSUSE)
+  zypper:
+    name:
+      - sway
+      - swaylock
+      - swayidle
+      - waybar
+      - python3
+      - python3-pip
+      - ImageMagick
+      - brightnessctl
+      - playerctl
+      - grim
+      - slurp
+      - wf-recorder
+      - wl-clipboard
+      - mako
+      - git
+      - fontawesome-fonts
+      - gnome-themes-extra
+    state: present
+    update_cache: yes
+  when: ansible_facts['os_family'] == 'Suse'
+  become: true
 
 - name: Install base system dependencies (Arch)
   pacman:
@@ -70,4 +123,4 @@
       - gnome-themes-extra
     state: present
   when: ansible_facts['distribution'] == 'Archlinux'
-  become: yes
+  become: true

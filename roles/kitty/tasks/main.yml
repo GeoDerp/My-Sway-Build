@@ -3,41 +3,60 @@
   dnf:
     name: kitty
     state: present
-  when: ansible_facts['distribution'] == 'Fedora'
-  become: yes
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - system_pkg_mgr in dnf_like_pkg_mgrs
+  become: true
+
+- name: Layer kitty terminal (rpm-ostree)
+  community.general.rpm_ostree_pkg:
+    name: kitty
+    state: present
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
+  become: true
 
 - name: Install kitty terminal (Ubuntu/Debian)
   apt:
     name: kitty
     state: present
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
-  become: yes
+  become: true
+
+- name: Install kitty terminal (openSUSE)
+  zypper:
+    name: kitty
+    state: present
+  when: ansible_facts['os_family'] == 'Suse'
+  become: true
 
 - name: Install kitty terminal (Arch)
   pacman:
     name: kitty
     state: present
   when: ansible_facts['distribution'] == 'Archlinux'
-  become: yes
+  become: true
 
 - name: Ensure kitty config directory exists
   file:
     path: "{{ kitty_config_dir }}"
     state: directory
     mode: '0755'
-  become: no
+  become: false
 
 - name: Copy kitty configuration
   copy:
     src: "{{ playbook_dir }}/Backup-.configs/kitty/kitty.conf"
     dest: "{{ kitty_config_dir }}/kitty.conf"
     mode: '0644'
-  become: no
+  become: false
 
 - name: Register kitty.conf as wpgtk template
   shell: wpg -ta "{{ kitty_config_dir }}/kitty.conf"
-  become: no
+  become: false
   failed_when: false
+  changed_when: false
   register: wpgtk_kitty_result
 
 - name: Report wpgtk registration status for Kitty

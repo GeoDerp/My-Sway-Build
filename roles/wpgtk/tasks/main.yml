@@ -1,26 +1,33 @@
 ---
-- name: Install wpgtk dependencies
-  package:
-    name:
-      - python3-pip
-      - python3-setuptools
-      - python3-wheel
-    state: present
-  become: yes
+- name: Check if uv is installed
+  command: which uv
+  register: uv_installed
+  failed_when: false
+  changed_when: false
+  become: false
 
-- name: Install wpgtk via pip (user install)
-  pip:
-    name: wpgtk
-    state: present
-    extra_args: --user
-  become: no
+- name: Install uv if not present
+  shell: curl -LsSf https://astral.sh/uv/install.sh | sh
+  when: uv_installed.rc != 0
+  become: false
+  args:
+    creates: "{{ lookup('env', 'HOME') }}/.cargo/bin/uv"
+
+- name: Install wpgtk via uv (user install)
+  shell: |
+    export PATH="$HOME/.cargo/bin:$PATH"
+    uv pip install --user wpgtk
+  become: false
+  register: wpgtk_install
+  changed_when: "'Successfully installed' in wpgtk_install.stdout or 'Successfully installed' in wpgtk_install.stderr"
+  failed_when: false
 
 - name: Ensure wpgtk config directory exists
   file:
     path: "{{ wpgtk_home }}/.config/wpg"
     state: directory
     mode: '0755'
-  become: no
+  become: false
 
 - name: Find wpgtk installation script
   find:
@@ -28,17 +35,18 @@
     patterns: "wpg-install.sh"
     recurse: yes
   register: wpgtk_script
-  become: no
+  become: false
 
 - name: Install wpgtk templates for various applications
   shell: |
     "{{ wpgtk_script.files[0].path }}" -gGi
   args:
     creates: "{{ wpgtk_home }}/.themes"
-  become: no
+  become: false
   when: wpgtk_script.files | length > 0 and wpgtk_script.files[0] is defined
   failed_when: false
   register: wpgtk_install_result
+  changed_when: not (wpgtk_install_result.skipped | default(false))
 
 - name: Report wpgtk template installation status
   debug:
@@ -50,8 +58,9 @@
     gsettings set org.gnome.desktop.wm.preferences theme "linea-nord-color"
     gsettings set org.gnome.desktop.interface theme "linea-nord-color"
     gsettings set org.gnome.desktop.interface icon-theme "Flattcolor-dark"
-  become: no
+  become: false
   failed_when: false
+  changed_when: false
   when: lookup('env', 'XDG_CURRENT_DESKTOP') == 'GNOME'
   register: gnome_theme_result
 

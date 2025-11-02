@@ -1,6 +1,7 @@
 ---
 # requirements.yml - Ansible Galaxy requirements
 
-collections: []
+collections:
+  - name: community.general
 
 roles: []

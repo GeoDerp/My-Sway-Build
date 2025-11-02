@@ -14,6 +14,9 @@ This repository provides an automated Ansible playbook to set up a complete Sway
 git clone https://github.com/GeoDerp/My-Sway-Build.git
 cd My-Sway-Build
 
+# Install required Ansible collections
+ansible-galaxy collection install -r requirements.yml
+
 # Run the Ansible playbook
 make install
 # Or: ansible-playbook playbook.yml
@@ -25,7 +28,7 @@ For detailed installation instructions, configuration options, and troubleshooti
 
 - ✅ **Fully automated setup** with Ansible
 - ✅ **wpgtk integration** for consistent theming
-- ✅ **Multi-distribution support** (Fedora, Ubuntu/Debian, Arch)
+- ✅ **Multi-distribution support** (Fedora, Ubuntu/Debian, Arch, openSUSE, rpm-ostree variants)
 - ✅ **Modular role-based design** for easy customization
 - ✅ **Pre-configured dotfiles** with best practices
 
