@@ -36,7 +36,7 @@
   args:
     creates: "{{ wpgtk_home }}/.themes"
   become: no
-  when: wpgtk_script.files | length > 0
+  when: wpgtk_script.files | length > 0 and wpgtk_script.files[0] is defined
   failed_when: false
   register: wpgtk_install_result
 
