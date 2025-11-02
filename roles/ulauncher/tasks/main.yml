@@ -56,6 +56,6 @@
   become: no
 
 - name: Register ulauncher theme.css as wpgtk template
-  shell: wpg -ta {{ ulauncher_theme_dir }}/theme.css
+  shell: wpg -ta "{{ ulauncher_theme_dir }}/theme.css"
   become: no
   ignore_errors: yes

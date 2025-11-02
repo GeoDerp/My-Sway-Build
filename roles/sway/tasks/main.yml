@@ -14,7 +14,7 @@
   become: no
 
 - name: Register sway config as wpgtk template
-  shell: wpg -ta {{ sway_config_dir }}/config
+  shell: wpg -ta "{{ sway_config_dir }}/config"
   become: no
   ignore_errors: yes
 

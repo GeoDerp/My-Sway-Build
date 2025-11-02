@@ -24,7 +24,7 @@
 
 - name: Install wpgtk templates for various applications
   shell: |
-    {{ wpgtk_home }}/.local/lib/python*/site-packages/wpgtk/misc/wpg-install.sh -gGi
+    "{{ wpgtk_home }}/.local/lib/python"*/site-packages/wpgtk/misc/wpg-install.sh -gGi
   args:
     creates: "{{ wpgtk_home }}/.themes"
   become: no

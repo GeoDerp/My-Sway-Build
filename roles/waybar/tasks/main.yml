@@ -28,6 +28,6 @@
   become: no
 
 - name: Register waybar style.css as wpgtk template
-  shell: wpg -ta {{ waybar_config_dir }}/style.css
+  shell: wpg -ta "{{ waybar_config_dir }}/style.css"
   become: no
   ignore_errors: yes
