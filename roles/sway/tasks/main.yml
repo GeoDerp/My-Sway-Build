@@ -16,7 +16,12 @@
 - name: Register sway config as wpgtk template
   shell: wpg -ta "{{ sway_config_dir }}/config"
   become: no
-  ignore_errors: yes
+  failed_when: false
+  register: wpgtk_sway_result
+
+- name: Report wpgtk registration status for Sway
+  debug:
+    msg: "Sway config {{ 'registered with wpgtk' if wpgtk_sway_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"
 
 - name: Ensure sway is set as default session (optional)
   lineinfile:

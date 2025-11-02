@@ -1,7 +1,6 @@
 ---
 - name: Setup Sway Desktop Environment with wpgtk
   hosts: localhost
-  become: yes
   vars:
     user_home: "{{ lookup('env', 'HOME') }}"
     config_dir: "{{ user_home }}/.config"

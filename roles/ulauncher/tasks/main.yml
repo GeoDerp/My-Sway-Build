@@ -58,4 +58,9 @@
 - name: Register ulauncher theme.css as wpgtk template
   shell: wpg -ta "{{ ulauncher_theme_dir }}/theme.css"
   become: no
-  ignore_errors: yes
+  failed_when: false
+  register: wpgtk_ulauncher_result
+
+- name: Report wpgtk registration status for Ulauncher
+  debug:
+    msg: "Ulauncher theme.css {{ 'registered with wpgtk' if wpgtk_ulauncher_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"
