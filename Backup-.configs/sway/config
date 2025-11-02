@@ -76,7 +76,7 @@ bindsym XF86Search exec $menu
 floating_modifier $mod normal
 
 # Reload the configuration file and refresh ulauncher
-bindsym $mod+$alt+r exec killall ulauncher && sway reload && wpg -s "$wall" && ulauncher --hide-window 
+bindsym $mod+$alt+r exec killall ulauncher || true && sway reload && wpg -s "$wall" && ulauncher --hide-window 
 
 # Exit sway (logs you out of your Wayland session)
 bindsym Mod4+$alt+l exit
