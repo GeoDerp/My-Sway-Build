@@ -1,0 +1,61 @@
+---
+- name: Install wpgtk dependencies
+  package:
+    name:
+      - python3-pip
+      - python3-setuptools
+      - python3-wheel
+    state: present
+  become: yes
+
+- name: Install wpgtk via pip (user install)
+  pip:
+    name: wpgtk
+    state: present
+    extra_args: --user
+  become: no
+
+- name: Ensure wpgtk config directory exists
+  file:
+    path: "{{ wpgtk_home }}/.config/wpg"
+    state: directory
+    mode: '0755'
+  become: no
+
+- name: Find wpgtk installation script
+  find:
+    paths: "{{ wpgtk_home }}/.local/lib"
+    patterns: "wpg-install.sh"
+    recurse: yes
+  register: wpgtk_script
+  become: no
+
+- name: Install wpgtk templates for various applications
+  shell: |
+    "{{ wpgtk_script.files[0].path }}" -gGi
+  args:
+    creates: "{{ wpgtk_home }}/.themes"
+  become: no
+  when: wpgtk_script.files | length > 0 and wpgtk_script.files[0] is defined
+  failed_when: false
+  register: wpgtk_install_result
+
+- name: Report wpgtk template installation status
+  debug:
+    msg: "wpgtk templates installation {{ 'succeeded' if wpgtk_install_result.rc == 0 else 'skipped or failed - may need manual installation' }}"
+  when: wpgtk_script.files | length > 0
+
+- name: Set GNOME theme to linea-nord-color (if using GNOME)
+  shell: |
+    gsettings set org.gnome.desktop.wm.preferences theme "linea-nord-color"
+    gsettings set org.gnome.desktop.interface theme "linea-nord-color"
+    gsettings set org.gnome.desktop.interface icon-theme "Flattcolor-dark"
+  become: no
+  failed_when: false
+  when: lookup('env', 'XDG_CURRENT_DESKTOP') == 'GNOME'
+  register: gnome_theme_result
+
+- name: Report GNOME theme status
+  debug:
+    msg: "GNOME theme {{ 'applied successfully' if gnome_theme_result.rc == 0 else 'not applied - not using GNOME or themes not available' }}"
+  when: lookup('env', 'XDG_CURRENT_DESKTOP') == 'GNOME'

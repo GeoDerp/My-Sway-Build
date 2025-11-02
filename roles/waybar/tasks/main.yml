@@ -1,0 +1,38 @@
+---
+- name: Ensure waybar config directory exists
+  file:
+    path: "{{ waybar_config_dir }}"
+    state: directory
+    mode: '0755'
+  become: no
+
+- name: Copy waybar configuration
+  copy:
+    src: "{{ playbook_dir }}/Backup-.configs/waybar/config"
+    dest: "{{ waybar_config_dir }}/config"
+    mode: '0644'
+  become: no
+
+- name: Copy waybar style.css
+  copy:
+    src: "{{ playbook_dir }}/Backup-.configs/waybar/style.css"
+    dest: "{{ waybar_config_dir }}/style.css"
+    mode: '0644'
+  become: no
+
+- name: Copy waybar audioswitch.py script
+  copy:
+    src: "{{ playbook_dir }}/Backup-.configs/waybar/audioswitch.py"
+    dest: "{{ waybar_config_dir }}/audioswitch.py"
+    mode: '0755'
+  become: no
+
+- name: Register waybar style.css as wpgtk template
+  shell: wpg -ta "{{ waybar_config_dir }}/style.css"
+  become: no
+  failed_when: false
+  register: wpgtk_waybar_result
+
+- name: Report wpgtk registration status for Waybar
+  debug:
+    msg: "Waybar style.css {{ 'registered with wpgtk' if wpgtk_waybar_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"

@@ -1,0 +1,33 @@
+---
+# Variables file for the entire playbook
+# Override these in your own vars file or via --extra-vars
+
+# User configuration
+target_user: "{{ ansible_user_id }}"
+user_home: "{{ lookup('env', 'HOME') }}"
+config_dir: "{{ user_home }}/.config"
+
+# wpgtk configuration
+wpgtk_autostart: yes
+wpgtk_install_templates: yes
+
+# Sway configuration
+sway_autostart: no  # Set to yes to auto-start sway on login
+
+# Display configuration
+# Examples of multi-monitor setup (uncomment and customize)
+# displays:
+#   - name: HDMI-A-1
+#     resolution: 1920x1080
+#     position: 2560,45
+#   - name: DVI-D-1
+#     resolution: 2560x1440
+#     position: 0,0
+
+# Additional packages to install (optional)
+extra_packages: []
+# Example:
+# extra_packages:
+#   - firefox
+#   - nautilus
+#   - gnome-control-center

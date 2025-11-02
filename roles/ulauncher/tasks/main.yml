@@ -1,0 +1,66 @@
+---
+- name: Install ulauncher (Fedora)
+  dnf:
+    name: ulauncher
+    state: present
+  when: ansible_facts['distribution'] == 'Fedora'
+  become: yes
+
+- name: Install ulauncher (Ubuntu/Debian)
+  apt:
+    name: ulauncher
+    state: present
+  when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
+  become: yes
+
+- name: Install ulauncher (Arch)
+  pacman:
+    name: ulauncher
+    state: present
+  when: ansible_facts['distribution'] == 'Archlinux'
+  become: yes
+
+- name: Ensure ulauncher config directory exists
+  file:
+    path: "{{ ulauncher_config_dir }}"
+    state: directory
+    mode: '0755'
+  become: no
+
+- name: Ensure ulauncher theme directory exists
+  file:
+    path: "{{ ulauncher_theme_dir }}"
+    state: directory
+    mode: '0755'
+  become: no
+
+- name: Copy ulauncher wpgtk theme manifest
+  copy:
+    src: "{{ playbook_dir }}/Backup-.configs/ulauncher/user-themes/wpgtk-theme/manifest.json"
+    dest: "{{ ulauncher_theme_dir }}/manifest.json"
+    mode: '0644'
+  become: no
+
+- name: Copy ulauncher wpgtk theme.css
+  copy:
+    src: "{{ playbook_dir }}/Backup-.configs/ulauncher/user-themes/wpgtk-theme/theme.css"
+    dest: "{{ ulauncher_theme_dir }}/theme.css"
+    mode: '0644'
+  become: no
+
+- name: Copy ulauncher wpgtk theme-gtk-3.20.css
+  copy:
+    src: "{{ playbook_dir }}/Backup-.configs/ulauncher/user-themes/wpgtk-theme/theme-gtk-3.20.css"
+    dest: "{{ ulauncher_theme_dir }}/theme-gtk-3.20.css"
+    mode: '0644'
+  become: no
+
+- name: Register ulauncher theme.css as wpgtk template
+  shell: wpg -ta "{{ ulauncher_theme_dir }}/theme.css"
+  become: no
+  failed_when: false
+  register: wpgtk_ulauncher_result
+
+- name: Report wpgtk registration status for Ulauncher
+  debug:
+    msg: "Ulauncher theme.css {{ 'registered with wpgtk' if wpgtk_ulauncher_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"

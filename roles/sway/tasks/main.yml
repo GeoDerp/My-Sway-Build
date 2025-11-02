@@ -1,0 +1,32 @@
+---
+- name: Ensure sway config directory exists
+  file:
+    path: "{{ sway_config_dir }}"
+    state: directory
+    mode: '0755'
+  become: no
+
+- name: Copy sway configuration from backup
+  copy:
+    src: "{{ playbook_dir }}/Backup-.configs/sway/config"
+    dest: "{{ sway_config_dir }}/config"
+    mode: '0644'
+  become: no
+
+- name: Register sway config as wpgtk template
+  shell: wpg -ta "{{ sway_config_dir }}/config"
+  become: no
+  failed_when: false
+  register: wpgtk_sway_result
+
+- name: Report wpgtk registration status for Sway
+  debug:
+    msg: "Sway config {{ 'registered with wpgtk' if wpgtk_sway_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"
+
+- name: Ensure sway is set as default session (optional)
+  lineinfile:
+    path: "{{ lookup('env', 'HOME') }}/.bash_profile"
+    line: 'if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then exec sway; fi'
+    create: yes
+  become: no
+  when: false  # Set to true if you want auto-start sway on login

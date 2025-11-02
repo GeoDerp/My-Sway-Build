@@ -1,0 +1,4 @@
+---
+# Ulauncher application launcher configuration
+ulauncher_config_dir: "{{ lookup('env', 'HOME') }}/.config/ulauncher"
+ulauncher_theme_dir: "{{ ulauncher_config_dir }}/user-themes/wpgtk-theme"
