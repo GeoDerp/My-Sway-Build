@@ -1,19 +1,53 @@
 # My-Sway-Build
-My second sway build, Maintained using Ansible using WPGTK for rice
+My second Sway build, maintained using Ansible with wpgtk for theming
 
 ![example](/img/screenshot.jpg)
 
-# Work In Progress
+## Quick Start
 
-## Things to do
-- [ ] figure out swaylock issue (not accepting arguments in sway config)
-- [ ] build Ansible playbook 
-- [ ] make gnome gui to interact with playbook and for easy maintenance of the sway build (place to insert new wallpaper)
-- [ ] fix directory issue with wpgtk and the blurred wallpaper image being considered as a wallpaper option
-- [ ] rice terminal (possibly switch terminal with one with opacity)
-	- [ ] implement fish? tackle/Tacklebox? with option to install
-- [ ] customize ulauncher some more 
-	- [ ] on sway refresh uluncher as well
-- [ ] implement github actions to test playbook against Linux distributions
-- [ ] continue hue module development for Waybar 
+This repository provides an automated Ansible playbook to set up a complete Sway desktop environment with wpgtk theming.
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/GeoDerp/My-Sway-Build.git
+cd My-Sway-Build
+
+# Run the Ansible playbook
+make install
+# Or: ansible-playbook playbook.yml
+```
+
+For detailed installation instructions, configuration options, and troubleshooting, see [ANSIBLE_README.md](ANSIBLE_README.md).
+
+### Key Features
+
+- ✅ **Fully automated setup** with Ansible
+- ✅ **wpgtk integration** for consistent theming
+- ✅ **Multi-distribution support** (Fedora, Ubuntu/Debian, Arch)
+- ✅ **Modular role-based design** for easy customization
+- ✅ **Pre-configured dotfiles** with best practices
+
+## Components
+
+- **Sway**: Tiling Wayland compositor
+- **Waybar**: Customizable status bar
+- **Ulauncher**: Application launcher
+- **Kitty**: GPU-accelerated terminal with transparency
+- **wpgtk**: Wallpaper and theme management
+
+## Work In Progress
+
+### Things to do
+- [x] Build Ansible playbook
+- [ ] Figure out swaylock issue (not accepting arguments in sway config)
+- [ ] Make GNOME GUI to interact with playbook and for easy maintenance of the sway build (place to insert new wallpaper)
+- [ ] Fix directory issue with wpgtk and the blurred wallpaper image being considered as a wallpaper option
+- [ ] Rice terminal (possibly switch terminal with one with opacity)
+	- [ ] Implement fish? tackle/Tacklebox? with option to install
+- [ ] Customize ulauncher some more
+	- [x] On sway refresh, ulauncher refreshes as well
+- [ ] Implement GitHub Actions to test playbook against Linux distributions
+- [ ] Continue hue module development for Waybar 
 
