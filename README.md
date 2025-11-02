@@ -41,7 +41,7 @@ For detailed installation instructions, configuration options, and troubleshooti
 
 ### Things to do
 - [x] Build Ansible playbook
-- [ ] Figure out swaylock issue (not accepting arguments in sway config)
+- [x] Figure out swaylock issue (not accepting arguments in sway config)
 - [ ] Make GNOME GUI to interact with playbook and for easy maintenance of the sway build (place to insert new wallpaper)
 - [ ] Fix directory issue with wpgtk and the blurred wallpaper image being considered as a wallpaper option
 - [ ] Rice terminal (possibly switch terminal with one with opacity)
