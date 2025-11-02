@@ -377,42 +377,25 @@ bindsym print exec grim $(xdg-user-dir PICTURES)/$(date +'%Y-%m-%d-%H%M%S_grim.p
 bindsym print+$alt exec "grim -g \"$(slurp)\" $(xdg-user-dir PICTURES)/$(date +'%Y-%m-%d-%H%M%S_grim.png')"
 
 # Swaylock configuration (wpgtk managed colors)
-# Variables for swaylock styling
-set $bshlcolor --bs-hl-color "{color1}"
-set $capslockbshlcolor --caps-lock-bs-hl-color "{color4}"
-set $capslockkeyhlcolor --caps-lock-key-hl-color "{inactive}"
-
-set $insidecolor --inside-color "{color2}80"
-set $insideclearcolor --inside-clear-color "{color3}80"
-set $insidevercolor --inside-ver-color "{color5}80"
-set $insidewrongcolor --inside-wrong-color "{color7}80"
-
-set $keyhlcolor --key-hl-color "{color2}"
-
-set $linecolor --line-color "{color15}"
-set $lineclearcolor --line-clear-color "{color3}"
-set $linecapslockcolor --line-caps-lock-color "{color4}"
-set $linevercolor --line-ver-color "{color5}"
-set $linewrongcolor --line-wrong-color "{color7}"
-
-set $ringcolor --ring-color "{color2}"
-set $ringclearcolor --ring-clear-color "{color3}"
-set $ringcapslockcolor --ring-caps-lock-color "{color4}"
-set $ringvercolor --ring-ver-color "{color5}"
-set $ringwrongcolor --ring-wrong-color "{color7}"
-
-set $separatorcolor --separator-color "{inactive}"
-
-set $textcolor --text-color "{active}"
-set $textvercolor --text-ver-color "{active}"
-set $textclearcolor --text-clear-color "{active}"
-set $textcapslockcolor --text-caps-lock-color "{active}"
-set $textwrongcolor --text-wrong-color "{active}"
-
-set $indicatorradius --indicator-radius 180
-set $scaling -s fill
-
-# Swaylock command with all styling options
-set $swaylock swaylock -i "$lock" $scaling $bshlcolor $capslockbshlcolor $capslockkeyhlcolor $insidecolor $insideclearcolor $insidevercolor $insidewrongcolor $keyhlcolor $linecolor $lineclearcolor $linecapslockcolor $linevercolor $linewrongcolor $ringcolor $ringclearcolor $ringcapslockcolor $ringvercolor $ringwrongcolor $separatorcolor $textcolor $textvercolor $textclearcolor $textcapslockcolor $textwrongcolor $indicatorradius --ignore-empty-password
+# Clean, minimal design matching the rest of the system
+set $swaylock swaylock -i "$lock" \
+    -s fill \
+    --indicator-radius 100 \
+    --indicator-thickness 8 \
+    --ring-color "{color0}" \
+    --ring-ver-color "{active}" \
+    --ring-wrong-color "{color1}" \
+    --key-hl-color "{color2}" \
+    --bs-hl-color "{color1}" \
+    --line-color "{color15}00" \
+    --inside-color "{color0}CC" \
+    --inside-ver-color "{active}CC" \
+    --inside-wrong-color "{color1}CC" \
+    --separator-color "{color15}00" \
+    --text-color "{color15}" \
+    --text-ver-color "{color15}" \
+    --text-wrong-color "{color15}" \
+    --ignore-empty-password \
+    --show-failed-attempts
 
 

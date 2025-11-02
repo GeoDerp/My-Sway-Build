@@ -33,3 +33,13 @@
     dest: "{{ kitty_config_dir }}/kitty.conf"
     mode: '0644'
   become: no
+
+- name: Register kitty.conf as wpgtk template
+  shell: wpg -ta "{{ kitty_config_dir }}/kitty.conf"
+  become: no
+  failed_when: false
+  register: wpgtk_kitty_result
+
+- name: Report wpgtk registration status for Kitty
+  debug:
+    msg: "Kitty config {{ 'registered with wpgtk' if wpgtk_kitty_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"
