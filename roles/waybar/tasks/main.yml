@@ -11,6 +11,7 @@
     src: "{{ playbook_dir }}/Backup-.configs/waybar/config"
     dest: "{{ waybar_config_dir }}/config"
     mode: '0644'
+    force: true
   become: false
 
 - name: Copy waybar style.css
@@ -18,22 +19,51 @@
     src: "{{ playbook_dir }}/Backup-.configs/waybar/style.css"
     dest: "{{ waybar_config_dir }}/style.css"
     mode: '0644'
+    force: true
   become: false
+  notify: Reapply wpgtk theme
 
 - name: Copy waybar audioswitch.py script
   copy:
     src: "{{ playbook_dir }}/Backup-.configs/waybar/audioswitch.py"
     dest: "{{ waybar_config_dir }}/audioswitch.py"
     mode: '0755'
+    force: true
   become: false
 
+- name: Remove waybar style.css from wpgtk templates
+  command: "{{ wpg_binary }} -t -d {{ waybar_config_dir }}/style.css"
+  become: false
+  failed_when: false
+  changed_when: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
+
 - name: Register waybar style.css as wpgtk template
-  shell: wpg -ta "{{ waybar_config_dir }}/style.css"
+  command: "{{ wpg_binary }} -ta {{ waybar_config_dir }}/style.css"
   become: false
   failed_when: false
   changed_when: false
   register: wpgtk_waybar_result
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
 
 - name: Report wpgtk registration status for Waybar
   debug:
     msg: "Waybar style.css {{ 'registered with wpgtk' if wpgtk_waybar_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
+
+- name: Skipping wpgtk registration for Waybar
+  debug:
+    msg: "Skipped registering Waybar style.css with wpgtk because the wpgtk tooling is unavailable"
+  when:
+    - wpgtk_install_templates | bool
+    - not (wpgtk_available | default(false))

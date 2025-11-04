@@ -6,23 +6,105 @@
     mode: '0755'
   become: false
 
+- name: Get current wpgtk wallpaper
+  command: "{{ wpg_binary }} -c"
+  register: current_wallpaper
+  become: false
+  failed_when: false
+  changed_when: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when: wpgtk_available | default(false)
+
+- name: Set wallpaper path fact
+  set_fact:
+    wpg_wallpaper_path: "{{ user_home }}/.config/wpg/wallpapers/{{ current_wallpaper.stdout | trim }}"
+    wpg_lock_path: "{{ user_home }}/.config/wpg/wallpapers/{{ current_wallpaper.stdout | trim }}.lock"
+  when:
+    - wpgtk_available | default(false)
+    - current_wallpaper.stdout is defined
+    - current_wallpaper.stdout | trim | length > 0
+
+- name: Check if wallpaper file exists
+  stat:
+    path: "{{ wpg_wallpaper_path }}"
+  register: wallpaper_file
+  become: false
+  when:
+    - wpgtk_available | default(false)
+    - wpg_wallpaper_path is defined
+
+- name: Check if blurred lock wallpaper exists
+  stat:
+    path: "{{ wpg_lock_path }}"
+  register: lock_file
+  become: false
+  when:
+    - wpgtk_available | default(false)
+    - wpg_lock_path is defined
+
+- name: Create blurred lock screen wallpaper using imagemagick
+  command: "magick '{{ wpg_wallpaper_path }}' -gaussian-blur 0x7 '{{ wpg_lock_path }}'"
+  become: false
+  when:
+    - wpgtk_available | default(false)
+    - wallpaper_file.stat.exists | default(false)
+    - not (lock_file.stat.exists | default(false))
+
 - name: Copy sway configuration from backup
   copy:
     src: "{{ playbook_dir }}/Backup-.configs/sway/config"
     dest: "{{ sway_config_dir }}/config"
     mode: '0644'
+    force: true
   become: false
+  notify: Reapply wpgtk theme
+
+- name: Remove old wpgtk sway template base file
+  file:
+    path: "{{ user_home }}/.config/wpg/templates/config_sway_config.base"
+    state: absent
+  become: false
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
+
+- name: Remove sway config from wpgtk templates
+  command: "{{ wpg_binary }} -t -d {{ sway_config_dir }}/config"
+  become: false
+  failed_when: false
+  changed_when: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
 
 - name: Register sway config as wpgtk template
-  shell: wpg -ta "{{ sway_config_dir }}/config"
+  command: "{{ wpg_binary }} -ta {{ sway_config_dir }}/config"
   become: false
   failed_when: false
   changed_when: false
   register: wpgtk_sway_result
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
 
 - name: Report wpgtk registration status for Sway
   debug:
     msg: "Sway config {{ 'registered with wpgtk' if wpgtk_sway_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
+
+- name: Skipping wpgtk registration for Sway
+  debug:
+    msg: "Skipped registering Sway config with wpgtk because the wpgtk tooling is unavailable"
+  when:
+    - wpgtk_install_templates | bool
+    - not (wpgtk_available | default(false))
 
 - name: Ensure sway is set as default session (optional)
   lineinfile:

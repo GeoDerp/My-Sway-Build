@@ -1,0 +1,10 @@
+---
+- name: Reapply wpgtk theme
+  command: "{{ wpg_binary }} -r"
+  become: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_cargo_bin }}:{{ user_default_path }}"
+  register: wpgtk_reapply_result
+  failed_when: false
+  changed_when: wpgtk_reapply_result.rc == 0
+  when: wpgtk_available | default(false)

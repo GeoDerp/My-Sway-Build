@@ -6,21 +6,40 @@
   changed_when: false
   become: false
 
+- name: Check for uv binary in user cargo bin
+  stat:
+    path: "{{ uv_binary }}"
+  register: uv_binary_stat
+  become: false
+
+- name: Create local tooling directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ user_home }}/.cargo"
+    - "{{ user_cargo_bin }}"
+    - "{{ user_local_bin }}"
+  become: false
+
 - name: Install uv if not present
   shell: curl -LsSf https://astral.sh/uv/install.sh | sh
-  when: uv_installed.rc != 0
+  when: uv_installed.rc != 0 and not uv_binary_stat.stat.exists
   become: false
   args:
-    creates: "{{ lookup('env', 'HOME') }}/.cargo/bin/uv"
+    creates: "{{ uv_binary }}"
 
-- name: Install wpgtk via uv (user install)
-  shell: |
-    export PATH="$HOME/.cargo/bin:$PATH"
-    uv pip install --user wpgtk
+- name: Install wpgtk via uv tool
+  command: uv tool install wpgtk
+  args:
+    creates: "{{ wpg_binary }}"
   become: false
+  environment:
+    PATH: "{{ user_cargo_bin }}:{{ user_default_path }}"
   register: wpgtk_install
-  changed_when: "'Successfully installed' in wpgtk_install.stdout or 'Successfully installed' in wpgtk_install.stderr"
   failed_when: false
+  changed_when: "'installed' in (wpgtk_install.stdout | default('') | lower) or 'installed' in (wpgtk_install.stderr | default('') | lower)"
 
 - name: Ensure wpgtk config directory exists
   file:
@@ -68,3 +87,25 @@
   debug:
     msg: "GNOME theme {{ 'applied successfully' if gnome_theme_result.rc == 0 else 'not applied - not using GNOME or themes not available' }}"
   when: lookup('env', 'XDG_CURRENT_DESKTOP') == 'GNOME'
+
+- name: Check if wpg binary is available
+  stat:
+    path: "{{ wpg_binary }}"
+  register: wpg_binary_stat_final
+  become: false
+
+- name: Publish wpgtk availability fact
+  set_fact:
+    wpgtk_available: "{{ wpg_binary_stat_final.stat.exists | bool }}"
+
+- name: Force reapply wpgtk theme (ensure placeholders get replaced)
+  command: "{{ wpg_binary }} -r"
+  become: false
+  failed_when: false
+  changed_when: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_cargo_bin }}:{{ user_default_path }}"
+    HOME: "{{ wpgtk_home }}"
+  args:
+    chdir: "{{ wpgtk_home }}"
+  when: wpgtk_available | default(false)

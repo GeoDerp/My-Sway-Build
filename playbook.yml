@@ -1,8 +1,9 @@
 ---
 - name: Setup Sway Desktop Environment with wpgtk
   hosts: localhost
+  become: false
   vars:
-    user_home: "{{ lookup('env', 'HOME') }}"
+    user_home: "{{ ansible_env.HOME | default(lookup('env', 'HOME')) }}"
     config_dir: "{{ user_home }}/.config"
     
   roles:

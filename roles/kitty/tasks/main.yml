@@ -7,6 +7,7 @@
     - ansible_facts['distribution'] == 'Fedora'
     - system_pkg_mgr in dnf_like_pkg_mgrs
   become: true
+  tags: ['install']
 
 - name: Layer kitty terminal (rpm-ostree)
   community.general.rpm_ostree_pkg:
@@ -16,6 +17,7 @@
     - ansible_facts['distribution'] == 'Fedora'
     - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
   become: true
+  tags: ['install']
 
 - name: Install kitty terminal (Ubuntu/Debian)
   apt:
@@ -23,6 +25,7 @@
     state: present
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
   become: true
+  tags: ['install']
 
 - name: Install kitty terminal (openSUSE)
   zypper:
@@ -30,6 +33,7 @@
     state: present
   when: ansible_facts['os_family'] == 'Suse'
   become: true
+  tags: ['install']
 
 - name: Install kitty terminal (Arch)
   pacman:
@@ -37,6 +41,7 @@
     state: present
   when: ansible_facts['distribution'] == 'Archlinux'
   become: true
+  tags: ['install']
 
 - name: Ensure kitty config directory exists
   file:
@@ -50,15 +55,52 @@
     src: "{{ playbook_dir }}/Backup-.configs/kitty/kitty.conf"
     dest: "{{ kitty_config_dir }}/kitty.conf"
     mode: '0644'
+    force: true
   become: false
+  notify: Reapply wpgtk theme
+
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
+
+- name: Strip Vim fold markers from kitty config
+  replace:
+    path: "{{ kitty_config_dir }}/kitty.conf"
+    regexp: '^\#\:\s+.*\{\{\{$'
+    replace: ''
+  become: false
+  when: wpgtk_install_templates | bool
+
+- name: Strip closing Vim fold markers from kitty config
+  replace:
+    path: "{{ kitty_config_dir }}/kitty.conf"
+    regexp: '^\#:?\s+\}\}\}$'
+    replace: ''
+  become: false
+  when: wpgtk_install_templates | bool
 
 - name: Register kitty.conf as wpgtk template
-  shell: wpg -ta "{{ kitty_config_dir }}/kitty.conf"
+  command: "{{ wpg_binary }} -ta {{ kitty_config_dir }}/kitty.conf"
   become: false
   failed_when: false
   changed_when: false
   register: wpgtk_kitty_result
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
 
 - name: Report wpgtk registration status for Kitty
   debug:
     msg: "Kitty config {{ 'registered with wpgtk' if wpgtk_kitty_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
+
+- name: Skipping wpgtk registration for Kitty
+  debug:
+    msg: "Skipped registering Kitty config with wpgtk because the wpgtk tooling is unavailable"
+  when:
+    - wpgtk_install_templates | bool
+    - not (wpgtk_available | default(false))

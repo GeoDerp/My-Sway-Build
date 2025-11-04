@@ -11,9 +11,9 @@ set $mod Mod1
 set $alt shift
 
 # Wallpaper configuration (wpgtk managed)
-# {wallpaper} is replaced by wpgtk when applying theme
-set $wall {wallpaper}
-set $lock {wallpaper}.lock  # .lock is the name convention for the generated blurred image
+# /var/home/geo/.config/wpg/wallpapers/lomig-gautier-Z2UGiPLrkPc-unsplash.jpg is replaced by wpgtk when applying theme
+set $wall /var/home/geo/.config/wpg/wallpapers/lomig-gautier-Z2UGiPLrkPc-unsplash.jpg
+set $lock /var/home/geo/.config/wpg/wallpapers/lomig-gautier-Z2UGiPLrkPc-unsplash.jpg.lock  # .lock is the name convention for the generated blurred image
 
 # Command to create the blurred lock screen image
 exec magick "$wall" -gaussian-blur 0x7 "$lock"
@@ -46,12 +46,12 @@ output * bg "$wall" stretch
 #output DVI-D-1 resolution 2560x1440 position 0,0
 
 # Touchpad configuration
-input type:touchpad {{
+input type:touchpad {
     tap enabled                    # Enable tap to click
     natural_scroll enabled         # Natural scrolling (inverted)
     dwt enabled                    # Disable while typing
     middle_emulation enabled       # Middle click emulation
-}}
+}
 
 
 ### Key bindings
@@ -83,7 +83,6 @@ bindsym Mod4+$alt+l exit
 
 # Lock screen
 bindsym Mod4+l exec $swaylock
-bindsym $mod+$alt+l exec sway exit
 
 ## Custom special keybindings (personal preference)
 
@@ -298,7 +297,7 @@ bindsym $mod+$alt+equal scratchpad show
 
 # Resizing containers:
 #
-mode "resize" {{
+mode "resize" {
     # left will shrink the containers width
     # right will grow the containers width
     # up will shrink the containers height
@@ -317,16 +316,16 @@ mode "resize" {{
     # return to default mode
     bindsym Return mode "default"
     bindsym Escape mode "default"
-}}
+}
 bindsym $mod+r mode "resize"
 
 # Window colors (wpgtk managed)
-set $bg-color            {active}
-set $inactive-bg-color   {inactive}
-set $text-color          {color15}
-set $inactive-text-color {color15}
-set $urgent-bg-color     {color2}
-set $indicator-color     {color10}
+set $bg-color            #bba88d
+set $inactive-bg-color   #817461
+set $text-color          #f2ede3
+set $inactive-text-color #f2ede3
+set $urgent-bg-color     #C2C0B8
+set $indicator-color     #C2C0B8
 
 # Window configuration - colors and borders
 #                       border              background         text                 indicator        child_border
@@ -350,9 +349,9 @@ exec ulauncher
 exec swayidle -w timeout 300 '$swaylock' timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep '$swaylock'
 
 # Running Waybar (SwayBar alternative)
-bar {{
+bar {
     swaybar_command waybar
-}}
+}
 
 # Laptop function keys configuration
 # Note: brightnessctl must be installed for brightness controls
@@ -382,20 +381,21 @@ set $swaylock swaylock -i "$lock" \
     -s fill \
     --indicator-radius 100 \
     --indicator-thickness 8 \
-    --ring-color "{color0}" \
-    --ring-ver-color "{active}" \
-    --ring-wrong-color "{color1}" \
-    --key-hl-color "{color2}" \
-    --bs-hl-color "{color1}" \
-    --line-color "{color15}00" \
-    --inside-color "{color0}CC" \
-    --inside-ver-color "{active}CC" \
-    --inside-wrong-color "{color1}CC" \
-    --separator-color "{color15}00" \
-    --text-color "{color15}" \
-    --text-ver-color "{color15}" \
-    --text-wrong-color "{color15}" \
+    --ring-color "#0e0e07" \
+    --ring-ver-color "#bba88d" \
+    --ring-wrong-color "#CAB9A1" \
+    --key-hl-color "#C2C0B8" \
+    --bs-hl-color "#CAB9A1" \
+    --line-color "#f2ede300" \
+    --inside-color "#0e0e07CC" \
+    --inside-ver-color "#bba88dCC" \
+    --inside-wrong-color "#CAB9A1CC" \
+    --separator-color "#f2ede300" \
+    --text-color "#f2ede3" \
+    --text-ver-color "#f2ede3" \
+    --text-wrong-color "#f2ede3" \
     --ignore-empty-password \
     --show-failed-attempts
+
 
 

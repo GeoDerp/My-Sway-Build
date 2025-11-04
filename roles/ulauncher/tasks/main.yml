@@ -57,6 +57,7 @@
     src: "{{ playbook_dir }}/Backup-.configs/ulauncher/user-themes/wpgtk-theme/manifest.json"
     dest: "{{ ulauncher_theme_dir }}/manifest.json"
     mode: '0644'
+    force: true
   become: false
 
 - name: Copy ulauncher wpgtk theme.css
@@ -64,22 +65,52 @@
     src: "{{ playbook_dir }}/Backup-.configs/ulauncher/user-themes/wpgtk-theme/theme.css"
     dest: "{{ ulauncher_theme_dir }}/theme.css"
     mode: '0644'
+    force: true
   become: false
+  notify: Reapply wpgtk theme
 
 - name: Copy ulauncher wpgtk theme-gtk-3.20.css
   copy:
     src: "{{ playbook_dir }}/Backup-.configs/ulauncher/user-themes/wpgtk-theme/theme-gtk-3.20.css"
     dest: "{{ ulauncher_theme_dir }}/theme-gtk-3.20.css"
     mode: '0644'
+    force: true
   become: false
+  notify: Reapply wpgtk theme
+
+- name: Remove ulauncher theme.css from wpgtk templates
+  command: "{{ wpg_binary }} -t -d {{ ulauncher_theme_dir }}/theme.css"
+  become: false
+  failed_when: false
+  changed_when: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
 
 - name: Register ulauncher theme.css as wpgtk template
-  shell: wpg -ta "{{ ulauncher_theme_dir }}/theme.css"
+  command: "{{ wpg_binary }} -ta {{ ulauncher_theme_dir }}/theme.css"
   become: false
   failed_when: false
   changed_when: false
   register: wpgtk_ulauncher_result
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
 
 - name: Report wpgtk registration status for Ulauncher
   debug:
     msg: "Ulauncher theme.css {{ 'registered with wpgtk' if wpgtk_ulauncher_result.rc == 0 else 'not registered - wpgtk may not be installed or configured' }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
+
+- name: Skipping wpgtk registration for Ulauncher
+  debug:
+    msg: "Skipped registering Ulauncher theme.css with wpgtk because the wpgtk tooling is unavailable"
+  when:
+    - wpgtk_install_templates | bool
+    - not (wpgtk_available | default(false))

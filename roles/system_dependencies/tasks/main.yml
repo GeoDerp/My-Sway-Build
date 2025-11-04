@@ -7,7 +7,6 @@
       - swayidle
       - waybar
       - python3
-      - python3-pip
       - ImageMagick  # for blurring lock screen wallpaper
       - brightnessctl  # for laptop brightness control
       - playerctl  # for media controls
@@ -33,7 +32,6 @@
       - swayidle
       - waybar
       - python3
-      - python3-pip
       - ImageMagick
       - brightnessctl
       - playerctl
@@ -59,7 +57,6 @@
       - swayidle
       - waybar
       - python3
-      - python3-pip
       - imagemagick
       - brightnessctl
       - playerctl
@@ -84,7 +81,6 @@
       - swayidle
       - waybar
       - python3
-      - python3-pip
       - ImageMagick
       - brightnessctl
       - playerctl
@@ -109,7 +105,6 @@
       - swayidle
       - waybar
       - python
-      - python-pip
       - imagemagick
       - brightnessctl
       - playerctl
