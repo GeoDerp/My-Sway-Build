@@ -12,8 +12,31 @@ set $alt shift
 
 # Wallpaper configuration (wpgtk managed)
 # /var/home/geo/.config/wpg/wallpapers/lomig-gautier-Z2UGiPLrkPc-unsplash.jpg is replaced by wpgtk when applying theme
-set $wall /var/home/geo/.config/wpg/wallpapers/lomig-gautier-Z2UGiPLrkPc-unsplash.jpg
-set $lock /var/home/geo/.config/wpg/wallpapers/lomig-gautier-Z2UGiPLrkPc-unsplash.jpg.lock  # .lock is the name convention for the generated blurred image
+# {wallpaper} is replaced by wpgtk when applying theme
+set $wall {wallpaper}
+set $lock {wallpaper}.lock.png  # .lock is the name convention for the generated blurred image
+
+# Swaylock configuration (wpgtk managed colors)
+# Clean, minimal design matching the rest of the system
+set $swaylock swaylock -i "/var/home/geo/Downloads/lomig-gautier-Z2UGiPLrkPc-unsplash.jpg.lock.png" \
+    -s fill \
+    --indicator-radius 100 \
+    --indicator-thickness 8 \
+    --ring-color "{color0}" \
+    --ring-ver-color "{active}" \
+    --ring-wrong-color "{color1}" \
+    --key-hl-color "{color2}" \
+    --bs-hl-color "{color1}" \
+    --line-color "{color15}00" \
+    --inside-color "{color0}CC" \
+    --inside-ver-color "{active}CC" \
+    --inside-wrong-color "{color1}CC" \
+    --separator-color "{color15}00" \
+    --text-color "{color15}" \
+    --text-ver-color "{color15}" \
+    --text-wrong-color "{color15}" \
+    --ignore-empty-password \
+    --show-failed-attempts
 
 # Command to create the blurred lock screen image
 exec magick "$wall" -gaussian-blur 0x7 "$lock"
@@ -320,12 +343,12 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # Window colors (wpgtk managed)
-set $bg-color            #bba88d
-set $inactive-bg-color   #817461
-set $text-color          #f2ede3
-set $inactive-text-color #f2ede3
-set $urgent-bg-color     #C2C0B8
-set $indicator-color     #C2C0B8
+set $bg-color            {active}
+set $inactive-bg-color   {inactive}
+set $text-color          {color15}
+set $inactive-text-color {color15}
+set $urgent-bg-color     {color2}
+set $indicator-color     {color10}
 
 # Window configuration - colors and borders
 #                       border              background         text                 indicator        child_border
@@ -375,27 +398,6 @@ bindsym XF86MonBrightnessUp exec brightnessctl set +5%
 bindsym print exec grim $(xdg-user-dir PICTURES)/$(date +'%Y-%m-%d-%H%M%S_grim.png')
 bindsym print+$alt exec "grim -g \"$(slurp)\" $(xdg-user-dir PICTURES)/$(date +'%Y-%m-%d-%H%M%S_grim.png')"
 
-# Swaylock configuration (wpgtk managed colors)
-# Clean, minimal design matching the rest of the system
-set $swaylock swaylock -i "$lock" \
-    -s fill \
-    --indicator-radius 100 \
-    --indicator-thickness 8 \
-    --ring-color "#0e0e07" \
-    --ring-ver-color "#bba88d" \
-    --ring-wrong-color "#CAB9A1" \
-    --key-hl-color "#C2C0B8" \
-    --bs-hl-color "#CAB9A1" \
-    --line-color "#f2ede300" \
-    --inside-color "#0e0e07CC" \
-    --inside-ver-color "#bba88dCC" \
-    --inside-wrong-color "#CAB9A1CC" \
-    --separator-color "#f2ede300" \
-    --text-color "#f2ede3" \
-    --text-ver-color "#f2ede3" \
-    --text-wrong-color "#f2ede3" \
-    --ignore-empty-password \
-    --show-failed-attempts
 
 
 

@@ -19,7 +19,7 @@
 - name: Set wallpaper path fact
   set_fact:
     wpg_wallpaper_path: "{{ user_home }}/.config/wpg/wallpapers/{{ current_wallpaper.stdout | trim }}"
-    wpg_lock_path: "{{ user_home }}/.config/wpg/wallpapers/{{ current_wallpaper.stdout | trim }}.lock"
+    wpg_lock_path: "{{ user_home }}/.config/wpg/wallpapers/{{ current_wallpaper.stdout | trim }}.lock.png"
   when:
     - wpgtk_available | default(false)
     - current_wallpaper.stdout is defined
@@ -33,6 +33,31 @@
   when:
     - wpgtk_available | default(false)
     - wpg_wallpaper_path is defined
+
+- name: Resolve actual wallpaper path
+  command:
+    argv:
+      - readlink
+      - -f
+      - "{{ wpg_wallpaper_path }}"
+  register: resolved_wallpaper_path
+  become: false
+  changed_when: false
+  when:
+    - wpgtk_available | default(false)
+    - wallpaper_file.stat.exists | default(false)
+
+- name: Update wallpaper and lock paths to resolved locations
+  set_fact:
+    # keep source as the resolved (real) wallpaper
+    wpg_wallpaper_path: "{{ resolved_wallpaper_path.stdout | default('') | trim | default(wpg_wallpaper_path, true) }}"
+    # write lock image next to the resolved (real) wallpaper file
+    wpg_lock_path: "{{ (resolved_wallpaper_path.stdout | default('') | trim | default(wpg_wallpaper_path, true)) + '.lock.png' }}"
+  when:
+    - wpgtk_available | default(false)
+    - wallpaper_file.stat.exists | default(false)
+    - resolved_wallpaper_path.stdout is defined
+    - resolved_wallpaper_path.stdout | trim | length > 0
 
 - name: Check if blurred lock wallpaper exists
   stat:
