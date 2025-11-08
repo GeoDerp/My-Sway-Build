@@ -99,7 +99,11 @@
     wpgtk_available: "{{ wpg_binary_stat_final.stat.exists | bool }}"
 
 - name: Force reapply wpgtk theme (ensure placeholders get replaced)
-  command: "{{ wpg_binary }} -r"
+  shell: |
+    current=$({{ wpg_binary }} -c)
+    if [ -n "$current" ]; then
+      {{ wpg_binary }} -s "$current" --noreload
+    fi
   become: false
   failed_when: false
   changed_when: false
@@ -110,11 +114,3 @@
     chdir: "{{ wpgtk_home }}"
   when: wpgtk_available | default(false)
 
-- name: Install lock-wrapper to user's local bin
-  copy:
-    src: lock-wrapper
-    dest: "{{ user_local_bin }}/lock-wrapper"
-    mode: '0755'
-    force: true
-  become: false
-  when: wpgtk_available | default(false)

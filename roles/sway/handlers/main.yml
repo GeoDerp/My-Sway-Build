@@ -3,13 +3,15 @@
   shell: |
     current=$({{ wpg_binary }} -c)
     if [ -n "$current" ]; then
-      {{ wpg_binary }} -s "$current"
+      {{ wpg_binary }} -s "$current" --noreload
     fi
   become: false
   environment:
     PATH: "{{ user_local_bin }}:{{ user_cargo_bin }}:{{ user_default_path }}"
+    HOME: "{{ wpgtk_home }}"
   register: wpgtk_reapply_result
   failed_when: false
   changed_when: wpgtk_reapply_result.rc == 0
+  args:
+    chdir: "{{ wpgtk_home }}"
   when: wpgtk_available | default(false)
-

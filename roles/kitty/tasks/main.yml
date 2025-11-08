@@ -6,6 +6,7 @@
   when:
     - ansible_facts['distribution'] == 'Fedora'
     - system_pkg_mgr in dnf_like_pkg_mgrs
+    - not skip_system_dependencies | bool
   become: true
   tags: ['install']
 
@@ -16,6 +17,7 @@
   when:
     - ansible_facts['distribution'] == 'Fedora'
     - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
+    - not skip_system_dependencies | bool
   become: true
   tags: ['install']
 
@@ -23,7 +25,9 @@
   apt:
     name: kitty
     state: present
-  when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
+  when:
+    - ansible_facts['distribution'] in ['Debian', 'Ubuntu']
+    - not skip_system_dependencies | bool
   become: true
   tags: ['install']
 
@@ -31,7 +35,9 @@
   zypper:
     name: kitty
     state: present
-  when: ansible_facts['os_family'] == 'Suse'
+  when:
+    - ansible_facts['os_family'] == 'Suse'
+    - not skip_system_dependencies | bool
   become: true
   tags: ['install']
 
@@ -39,9 +45,21 @@
   pacman:
     name: kitty
     state: present
-  when: ansible_facts['distribution'] == 'Archlinux'
+  when:
+    - ansible_facts['distribution'] == 'Archlinux'
+    - not skip_system_dependencies | bool
   become: true
   tags: ['install']
+
+- name: Check if wpg binary is available
+  stat:
+    path: "{{ wpg_binary }}"
+  register: wpg_binary_stat
+  become: false
+
+- name: Set wpgtk availability fact for kitty role
+  set_fact:
+    wpgtk_available: "{{ wpg_binary_stat.stat.exists | bool }}"
 
 - name: Ensure kitty config directory exists
   file:
@@ -49,6 +67,17 @@
     state: directory
     mode: '0755'
   become: false
+
+- name: Remove kitty.conf from wpgtk templates
+  command: "{{ wpg_binary }} -t -d {{ kitty_config_dir }}/kitty.conf"
+  become: false
+  failed_when: false
+  changed_when: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
 
 - name: Copy kitty configuration
   copy:
@@ -59,23 +88,19 @@
   become: false
   notify: Reapply wpgtk theme
 
-  when:
-    - wpgtk_install_templates | bool
-    - wpgtk_available | default(false)
-
-- name: Strip Vim fold markers from kitty config
+- name: Escape Vim fold markers for wpgtk (opening)
   replace:
     path: "{{ kitty_config_dir }}/kitty.conf"
-    regexp: '^\#\:\s+.*\{\{\{$'
-    replace: ''
+    regexp: '(\{\{\{)'
+    replace: '{{ "{{{{" }}'
   become: false
   when: wpgtk_install_templates | bool
 
-- name: Strip closing Vim fold markers from kitty config
+- name: Escape Vim fold markers for wpgtk (closing)
   replace:
     path: "{{ kitty_config_dir }}/kitty.conf"
-    regexp: '^\#:?\s+\}\}\}$'
-    replace: ''
+    regexp: '(\}\}\})'
+    replace: '{{ "}}}}" }}'
   become: false
   when: wpgtk_install_templates | bool
 

@@ -1,10 +1,31 @@
 ---
+- name: Check if wpg binary is available
+  stat:
+    path: "{{ wpg_binary }}"
+  register: wpg_binary_stat
+  become: false
+
+- name: Set wpgtk availability fact for waybar role
+  set_fact:
+    wpgtk_available: "{{ wpg_binary_stat.stat.exists | bool }}"
+
 - name: Ensure waybar config directory exists
   file:
     path: "{{ waybar_config_dir }}"
     state: directory
     mode: '0755'
   become: false
+
+- name: Remove waybar style.css from wpgtk templates
+  command: "{{ wpg_binary }} -t -d {{ waybar_config_dir }}/style.css"
+  become: false
+  failed_when: false
+  changed_when: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
 
 - name: Copy waybar configuration
   copy:
@@ -30,17 +51,6 @@
     mode: '0755'
     force: true
   become: false
-
-- name: Remove waybar style.css from wpgtk templates
-  command: "{{ wpg_binary }} -t -d {{ waybar_config_dir }}/style.css"
-  become: false
-  failed_when: false
-  changed_when: false
-  environment:
-    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
-  when:
-    - wpgtk_install_templates | bool
-    - wpgtk_available | default(false)
 
 - name: Register waybar style.css as wpgtk template
   command: "{{ wpg_binary }} -ta {{ waybar_config_dir }}/style.css"

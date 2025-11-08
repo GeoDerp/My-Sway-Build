@@ -1,4 +1,14 @@
 ---
+- name: Check if wpg binary is available
+  stat:
+    path: "{{ wpg_binary }}"
+  register: wpg_binary_stat
+  become: false
+
+- name: Set wpgtk availability fact for sway role
+  set_fact:
+    wpgtk_available: "{{ wpg_binary_stat.stat.exists | bool }}"
+
 - name: Ensure sway config directory exists
   file:
     path: "{{ sway_config_dir }}"
@@ -76,15 +86,6 @@
     - wallpaper_file.stat.exists | default(false)
     - not (lock_file.stat.exists | default(false))
 
-- name: Copy sway configuration from backup
-  copy:
-    src: "{{ playbook_dir }}/Backup-.configs/sway/config"
-    dest: "{{ sway_config_dir }}/config"
-    mode: '0644'
-    force: true
-  become: false
-  notify: Reapply wpgtk theme
-
 - name: Remove old wpgtk sway template base file
   file:
     path: "{{ user_home }}/.config/wpg/templates/config_sway_config.base"
@@ -104,6 +105,15 @@
   when:
     - wpgtk_install_templates | bool
     - wpgtk_available | default(false)
+
+- name: Copy sway configuration from backup
+  copy:
+    src: "{{ playbook_dir }}/Backup-.configs/sway/config"
+    dest: "{{ sway_config_dir }}/config"
+    mode: '0644'
+    force: true
+  become: false
+  notify: Reapply wpgtk theme
 
 - name: Register sway config as wpgtk template
   command: "{{ wpg_binary }} -ta {{ sway_config_dir }}/config"

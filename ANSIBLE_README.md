@@ -7,7 +7,7 @@ This repository contains an Ansible playbook to automate the installation and co
 - **Automated installation** of Sway window manager and related components
 - **wpgtk integration** for cohesive theming across all applications
 - **Pre-configured dotfiles** following best practices
-- **Multi-distribution support**: Fedora, Ubuntu/Debian, Arch Linux
+- **Multi-distribution support**: Fedora, Ubuntu/Debian, Arch Linux, openSUSE, and Fedora rpm-ostree variants (e.g., Silverblue, Kinoite)
 - **Modular role-based design** for easy customization
 
 ## Components Installed
@@ -21,7 +21,7 @@ This repository contains an Ansible playbook to automate the installation and co
 
 ## Prerequisites
 
-- A supported Linux distribution (Fedora, Ubuntu/Debian, or Arch Linux)
+- A supported Linux distribution (Fedora, Fedora rpm-ostree variants, Ubuntu/Debian, Arch Linux, or openSUSE)
 - Python 3 installed
 - Ansible installed (version 2.9 or higher)
 - Sudo privileges for installing system packages
@@ -51,6 +51,21 @@ sudo apt install ansible -y
 **Arch Linux:**
 ```bash
 sudo pacman -S ansible
+```
+
+**openSUSE:**
+```bash
+sudo zypper install ansible
+```
+
+**Fedora rpm-ostree variants (Silverblue/Kinoite/etc.):**
+```bash
+sudo rpm-ostree install ansible
+```
+
+After installing Ansible, install the required collections:
+```bash
+ansible-galaxy collection install -r requirements.yml
 ```
 
 ### 3. Run the playbook

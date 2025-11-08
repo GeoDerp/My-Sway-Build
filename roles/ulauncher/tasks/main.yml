@@ -6,6 +6,7 @@
   when:
     - ansible_facts['distribution'] == 'Fedora'
     - system_pkg_mgr in dnf_like_pkg_mgrs
+    - not skip_system_dependencies | bool
   become: true
 
 - name: Layer ulauncher (rpm-ostree)
@@ -15,28 +16,45 @@
   when:
     - ansible_facts['distribution'] == 'Fedora'
     - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
+    - not skip_system_dependencies | bool
   become: true
 
 - name: Install ulauncher (Ubuntu/Debian)
   apt:
     name: ulauncher
     state: present
-  when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
+  when:
+    - ansible_facts['distribution'] in ['Debian', 'Ubuntu']
+    - not skip_system_dependencies | bool
   become: true
 
 - name: Install ulauncher (openSUSE)
   zypper:
     name: ulauncher
     state: present
-  when: ansible_facts['os_family'] == 'Suse'
+  when:
+    - ansible_facts['os_family'] == 'Suse'
+    - not skip_system_dependencies | bool
   become: true
 
 - name: Install ulauncher (Arch)
   pacman:
     name: ulauncher
     state: present
-  when: ansible_facts['distribution'] == 'Archlinux'
+  when:
+    - ansible_facts['distribution'] == 'Archlinux'
+    - not skip_system_dependencies | bool
   become: true
+
+- name: Check if wpg binary is available
+  stat:
+    path: "{{ wpg_binary }}"
+  register: wpg_binary_stat
+  become: false
+
+- name: Set wpgtk availability fact for ulauncher role
+  set_fact:
+    wpgtk_available: "{{ wpg_binary_stat.stat.exists | bool }}"
 
 - name: Ensure ulauncher config directory exists
   file:
@@ -51,6 +69,17 @@
     state: directory
     mode: '0755'
   become: false
+
+- name: Remove ulauncher theme.css from wpgtk templates
+  command: "{{ wpg_binary }} -t -d {{ ulauncher_theme_dir }}/theme.css"
+  become: false
+  failed_when: false
+  changed_when: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
+  when:
+    - wpgtk_install_templates | bool
+    - wpgtk_available | default(false)
 
 - name: Copy ulauncher wpgtk theme manifest
   copy:
@@ -77,17 +106,6 @@
     force: true
   become: false
   notify: Reapply wpgtk theme
-
-- name: Remove ulauncher theme.css from wpgtk templates
-  command: "{{ wpg_binary }} -t -d {{ ulauncher_theme_dir }}/theme.css"
-  become: false
-  failed_when: false
-  changed_when: false
-  environment:
-    PATH: "{{ user_local_bin }}:{{ user_default_path }}"
-  when:
-    - wpgtk_install_templates | bool
-    - wpgtk_available | default(false)
 
 - name: Register ulauncher theme.css as wpgtk template
   command: "{{ wpg_binary }} -ta {{ ulauncher_theme_dir }}/theme.css"

@@ -18,7 +18,7 @@ set $lock {wallpaper}.lock.png  # .lock is the name convention for the generated
 
 # Swaylock configuration (wpgtk managed colors)
 # Clean, minimal design matching the rest of the system
-set $swaylock swaylock -i "/var/home/geo/Downloads/lomig-gautier-Z2UGiPLrkPc-unsplash.jpg.lock.png" \
+set $swaylock swaylock -i '$lock' \
     -s fill \
     --indicator-radius 100 \
     --indicator-thickness 8 \
@@ -69,12 +69,12 @@ output * bg "$wall" stretch
 #output DVI-D-1 resolution 2560x1440 position 0,0
 
 # Touchpad configuration
-input type:touchpad {
+input type:touchpad {{
     tap enabled                    # Enable tap to click
     natural_scroll enabled         # Natural scrolling (inverted)
     dwt enabled                    # Disable while typing
     middle_emulation enabled       # Middle click emulation
-}
+}}
 
 
 ### Key bindings
@@ -320,7 +320,7 @@ bindsym $mod+$alt+equal scratchpad show
 
 # Resizing containers:
 #
-mode "resize" {
+mode "resize" {{
     # left will shrink the containers width
     # right will grow the containers width
     # up will shrink the containers height
@@ -339,7 +339,7 @@ mode "resize" {
     # return to default mode
     bindsym Return mode "default"
     bindsym Escape mode "default"
-}
+}}
 bindsym $mod+r mode "resize"
 
 # Window colors (wpgtk managed)
@@ -372,9 +372,9 @@ exec ulauncher
 exec swayidle -w timeout 300 '$swaylock' timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep '$swaylock'
 
 # Running Waybar (SwayBar alternative)
-bar {
+bar {{
     swaybar_command waybar
-}
+}}
 
 # Laptop function keys configuration
 # Note: brightnessctl must be installed for brightness controls

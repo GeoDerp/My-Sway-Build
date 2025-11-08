@@ -9,6 +9,7 @@
   roles:
     - role: system_dependencies
       tags: ['dependencies', 'system']
+      when: not skip_system_dependencies | bool
     
     - role: wpgtk
       tags: ['wpgtk', 'theming']
