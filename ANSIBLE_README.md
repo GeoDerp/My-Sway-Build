@@ -225,6 +225,40 @@ Ensure waybar is installed and the config is valid:
 waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css
 ```
 
+### wpgtk theme not applying
+
+If colors aren't updating after adding a wallpaper:
+
+1. Check if wpgtk is available:
+   ```bash
+   wpg --version
+   ```
+
+2. Manually reapply the theme:
+   ```bash
+   wpg -s /path/to/your/wallpaper.jpg
+   ```
+
+3. Verify template files are registered:
+   ```bash
+   wpg -t
+   ```
+
+### Swaylock shows blank/black screen
+
+This usually happens when the wallpaper variables aren't properly expanded. Ensure:
+- You've applied a wpgtk theme at least once
+- The lock wallpaper exists: `ls ~/.config/wpg/wallpapers/*.lock.png`
+- Run the playbook again to regenerate configs: `ansible-playbook playbook.yml`
+
+### Kitty terminal shows "invalid color name" error
+
+This occurs when wpgtk hasn't processed the template yet. Solution:
+1. Apply a wpgtk theme: `wpg -s /path/to/wallpaper.jpg`
+2. Run the playbook again: `ansible-playbook playbook.yml`
+
+The playbook uses actual hex colors as fallbacks that wpgtk replaces when themes are applied.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
