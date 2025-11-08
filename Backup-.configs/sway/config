@@ -18,7 +18,7 @@ set $lock {wallpaper}.lock.png  # .lock is the name convention for the generated
 
 # Swaylock configuration (wpgtk managed colors)
 # Clean, minimal design matching the rest of the system
-set $swaylock swaylock -i '$lock' \
+set $swaylock swaylock -i "$lock" \
     -s fill \
     --indicator-radius 100 \
     --indicator-thickness 8 \
@@ -37,9 +37,6 @@ set $swaylock swaylock -i '$lock' \
     --text-wrong-color "{color15}" \
     --ignore-empty-password \
     --show-failed-attempts
-
-# Command to create the blurred lock screen image
-exec magick "$wall" -gaussian-blur 0x7 "$lock"
 
 # Home row direction keys, like vim
 set $left h
@@ -369,7 +366,7 @@ include /etc/sway/config.d/*
 exec ulauncher
 
 # Idle and lock configuration
-exec swayidle -w timeout 300 '$swaylock' timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep '$swaylock'
+exec swayidle -w timeout 300 "$swaylock" timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep "$swaylock"
 
 # Running Waybar (SwayBar alternative)
 bar {{
