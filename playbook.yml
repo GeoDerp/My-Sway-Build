@@ -3,7 +3,6 @@
   hosts: localhost
   become: false
   vars:
-    user_home: "{{ ansible_env.HOME | default(lookup('env', 'HOME')) }}"
     config_dir: "{{ user_home }}/.config"
     
   roles:
