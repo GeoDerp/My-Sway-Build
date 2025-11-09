@@ -2,8 +2,3 @@
 # Sway window manager configuration
 sway_config_dir: "{{ lookup('env', 'HOME') }}/.config/sway"
 
-# Lock screen wallpaper generation
-# The blurred lock wallpaper is created next to the wpgtk wallpaper symlink
-# (in ~/.config/wpg/wallpapers/) rather than next to the resolved real file.
-# This ensures the sway config's {wallpaper}.lock.png reference works correctly
-# since wpgtk substitutes {wallpaper} with the symlink path, not the resolved path.
