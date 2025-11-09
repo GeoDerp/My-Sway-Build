@@ -7,7 +7,7 @@ This repository contains an Ansible playbook to automate the installation and co
 - **Automated installation** of Sway window manager and related components
 - **wpgtk integration** for cohesive theming across all applications
 - **Pre-configured dotfiles** following best practices
-- **Multi-distribution support**: Fedora, Ubuntu/Debian, Arch Linux
+- **Multi-distribution support**: Fedora, Ubuntu/Debian, Arch Linux, openSUSE, and Fedora rpm-ostree variants (e.g., Silverblue, Kinoite)
 - **Modular role-based design** for easy customization
 
 ## Components Installed
@@ -21,7 +21,7 @@ This repository contains an Ansible playbook to automate the installation and co
 
 ## Prerequisites
 
-- A supported Linux distribution (Fedora, Ubuntu/Debian, or Arch Linux)
+- A supported Linux distribution (Fedora, Fedora rpm-ostree variants, Ubuntu/Debian, Arch Linux, or openSUSE)
 - Python 3 installed
 - Ansible installed (version 2.9 or higher)
 - Sudo privileges for installing system packages
@@ -51,6 +51,21 @@ sudo apt install ansible -y
 **Arch Linux:**
 ```bash
 sudo pacman -S ansible
+```
+
+**openSUSE:**
+```bash
+sudo zypper install ansible
+```
+
+**Fedora rpm-ostree variants (Silverblue/Kinoite/etc.):**
+```bash
+sudo rpm-ostree install ansible
+```
+
+After installing Ansible, install the required collections:
+```bash
+ansible-galaxy collection install -r requirements.yml
 ```
 
 ### 3. Run the playbook
@@ -101,7 +116,10 @@ After installation, you need to add wallpapers and apply a theme:
 3. The following configs are registered as wpgtk templates:
    - `~/.config/sway/config`
    - `~/.config/waybar/style.css`
+   - `~/.config/kitty/kitty.conf`
    - `~/.config/ulauncher/user-themes/wpgtk-theme/theme.css`
+
+**How wpgtk templates work**: Config files use template variables like `{color0}`, `{color15}`, `{active}`, `{inactive}`, etc. When you run `wpg -s`, wpgtk replaces these with actual hex colors from your chosen wallpaper's color scheme. This ensures consistent theming across all applications.
 
 ### Starting Sway
 
@@ -209,6 +227,43 @@ Ensure waybar is installed and the config is valid:
 ```bash
 waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css
 ```
+
+### wpgtk theme not applying
+
+If colors aren't updating after adding a wallpaper:
+
+1. Check if wpgtk is available:
+   ```bash
+   wpg --version
+   ```
+
+2. Manually reapply the theme:
+   ```bash
+   wpg -s /path/to/your/wallpaper.jpg
+   ```
+
+3. Verify template files are registered:
+   ```bash
+   wpg -t
+   ```
+
+### Swaylock shows blank/black screen
+
+This usually happens when the wallpaper variables aren't properly expanded. Ensure:
+- You've applied a wpgtk theme at least once
+- The lock wallpaper exists: `ls ~/.config/wpg/wallpapers/*.lock.png`
+- Run the playbook again to regenerate configs: `ansible-playbook playbook.yml`
+
+### Kitty terminal shows "invalid color name" error
+
+This occurs when wpgtk hasn't processed the template yet. The config uses wpgtk template variables (e.g., `{color0}`, `{color15}`) that need to be replaced with actual hex colors.
+
+**Solution**:
+1. Apply a wpgtk theme to process all templates: `wpg -s /path/to/wallpaper.jpg`
+2. This will replace template variables with hex colors from your wallpaper's color scheme
+3. If the error persists, check that kitty.conf is registered as a wpgtk template: `wpg -t | grep kitty`
+
+The Ansible playbook automatically registers kitty.conf as a wpgtk template, so colors will update whenever you change themes.
 
 ## Contributing
 

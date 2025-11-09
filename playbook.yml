@@ -1,13 +1,14 @@
 ---
 - name: Setup Sway Desktop Environment with wpgtk
   hosts: localhost
+  become: false
   vars:
-    user_home: "{{ lookup('env', 'HOME') }}"
     config_dir: "{{ user_home }}/.config"
     
   roles:
     - role: system_dependencies
       tags: ['dependencies', 'system']
+      when: not skip_system_dependencies | bool
     
     - role: wpgtk
       tags: ['wpgtk', 'theming']

@@ -16,7 +16,7 @@ help:
 	@echo "  clean           - Clean Ansible cache and temp files"
 
 install:
-	ansible-playbook playbook.yml
+	ansible-playbook playbook.yml --ask-become-pass
 
 check:
 	ansible-playbook playbook.yml --syntax-check
@@ -25,22 +25,22 @@ lint:
 	@command -v ansible-lint >/dev/null 2>&1 && ansible-lint playbook.yml || echo "ansible-lint not installed, skipping"
 
 dependencies:
-	ansible-playbook playbook.yml --tags dependencies
+	ansible-playbook playbook.yml --tags dependencies --ask-become-pass
 
 wpgtk:
-	ansible-playbook playbook.yml --tags wpgtk
+	ansible-playbook playbook.yml --tags wpgtk --ask-become-pass
 
 sway:
-	ansible-playbook playbook.yml --tags sway
+	ansible-playbook playbook.yml --tags sway --ask-become-pass
 
 waybar:
-	ansible-playbook playbook.yml --tags waybar
+	ansible-playbook playbook.yml --tags waybar --ask-become-pass
 
 ulauncher:
-	ansible-playbook playbook.yml --tags ulauncher
+	ansible-playbook playbook.yml --tags ulauncher --ask-become-pass
 
 kitty:
-	ansible-playbook playbook.yml --tags kitty
+	ansible-playbook playbook.yml --tags kitty --ask-become-pass
 
 clean:
 	rm -rf .ansible/

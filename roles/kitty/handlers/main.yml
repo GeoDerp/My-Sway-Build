@@ -1,0 +1,21 @@
+---
+# Handler for wpgtk theme reapplication after kitty config changes
+# Uses --noreload to prevent unnecessary UI reloads during Ansible runs
+# This is duplicated across roles to maintain role independence, though
+# the logic is identical. Each role can be used independently.
+- name: Reapply wpgtk theme
+  shell: |
+    current=$({{ wpg_binary }} -c)
+    if [ -n "$current" ]; then
+      {{ wpg_binary }} -s "$current" --noreload
+    fi
+  become: false
+  environment:
+    PATH: "{{ user_local_bin }}:{{ user_cargo_bin }}:{{ user_default_path }}"
+    HOME: "{{ wpgtk_home }}"
+  register: wpgtk_reapply_result
+  failed_when: false
+  changed_when: wpgtk_reapply_result.rc == 0
+  args:
+    chdir: "{{ wpgtk_home }}"
+  when: wpgtk_available | default(false)

@@ -4,12 +4,33 @@
 
 # User configuration
 target_user: "{{ ansible_user_id }}"
-user_home: "{{ lookup('env', 'HOME') }}"
+user_home: "{{ ansible_env.HOME | default(lookup('env', 'HOME')) }}"
 config_dir: "{{ user_home }}/.config"
+skip_system_dependencies: false
+
+# Package manager detection
+detected_pkg_mgr: "{{ ansible_pkg_mgr | default('') }}"
+system_pkg_mgr: "{{ detected_pkg_mgr | lower }}"
+rpm_ostree_like_pkg_mgrs:
+  - rpm-ostree
+  - atomic_container
+  - atomic
+  - ostree
+dnf_like_pkg_mgrs:
+  - dnf
+  - dnf4
+  - dnf5
+  - yum
+  - microdnf
 
 # wpgtk configuration
 wpgtk_autostart: yes
 wpgtk_install_templates: yes
+wpg_binary: "{{ user_home }}/.local/bin/wpg"
+uv_binary: "{{ user_home }}/.cargo/bin/uv"
+user_local_bin: "{{ user_home }}/.local/bin"
+user_cargo_bin: "{{ user_home }}/.cargo/bin"
+user_default_path: "{{ ansible_env.PATH | default('/usr/local/bin:/usr/bin:/bin') }}"
 
 # Sway configuration
 sway_autostart: no  # Set to yes to auto-start sway on login
