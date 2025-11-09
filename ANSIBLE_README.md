@@ -116,7 +116,10 @@ After installation, you need to add wallpapers and apply a theme:
 3. The following configs are registered as wpgtk templates:
    - `~/.config/sway/config`
    - `~/.config/waybar/style.css`
+   - `~/.config/kitty/kitty.conf`
    - `~/.config/ulauncher/user-themes/wpgtk-theme/theme.css`
+
+**How wpgtk templates work**: Config files use template variables like `{color0}`, `{color15}`, `{active}`, `{inactive}`, etc. When you run `wpg -s`, wpgtk replaces these with actual hex colors from your chosen wallpaper's color scheme. This ensures consistent theming across all applications.
 
 ### Starting Sway
 
@@ -253,11 +256,14 @@ This usually happens when the wallpaper variables aren't properly expanded. Ensu
 
 ### Kitty terminal shows "invalid color name" error
 
-This occurs when wpgtk hasn't processed the template yet. Solution:
-1. Apply a wpgtk theme: `wpg -s /path/to/wallpaper.jpg`
-2. Run the playbook again: `ansible-playbook playbook.yml`
+This occurs when wpgtk hasn't processed the template yet. The config uses wpgtk template variables (e.g., `{color0}`, `{color15}`) that need to be replaced with actual hex colors.
 
-The playbook uses actual hex colors as fallbacks that wpgtk replaces when themes are applied.
+**Solution**:
+1. Apply a wpgtk theme to process all templates: `wpg -s /path/to/wallpaper.jpg`
+2. This will replace template variables with hex colors from your wallpaper's color scheme
+3. If the error persists, check that kitty.conf is registered as a wpgtk template: `wpg -t | grep kitty`
+
+The Ansible playbook automatically registers kitty.conf as a wpgtk template, so colors will update whenever you change themes.
 
 ## Contributing
 
