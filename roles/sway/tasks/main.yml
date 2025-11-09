@@ -57,12 +57,12 @@
     - wpgtk_available | default(false)
     - wallpaper_file.stat.exists | default(false)
 
-- name: Update wallpaper and lock paths to resolved locations
+- name: Update wallpaper source to resolved location for blur generation
   set_fact:
-    # keep source as the resolved (real) wallpaper
-    wpg_wallpaper_path: "{{ resolved_wallpaper_path.stdout | default('') | trim | default(wpg_wallpaper_path, true) }}"
-    # write lock image next to the resolved (real) wallpaper file
-    wpg_lock_path: "{{ (resolved_wallpaper_path.stdout | default('') | trim | default(wpg_wallpaper_path, true)) + '.lock.png' }}"
+    # Use the resolved (real) wallpaper as the source for ImageMagick
+    wpg_wallpaper_source: "{{ resolved_wallpaper_path.stdout | default('') | trim | default(wpg_wallpaper_path, true) }}"
+    # Keep lock path at symlink location (where sway config expects it)
+    # This ensures sway's {wallpaper}.lock.png reference works correctly
   when:
     - wpgtk_available | default(false)
     - wallpaper_file.stat.exists | default(false)
@@ -79,7 +79,7 @@
     - wpg_lock_path is defined
 
 - name: Create blurred lock screen wallpaper using imagemagick
-  command: "magick '{{ wpg_wallpaper_path }}' -gaussian-blur 0x7 '{{ wpg_lock_path }}'"
+  command: "magick '{{ wpg_wallpaper_source | default(wpg_wallpaper_path) }}' -gaussian-blur 0x7 '{{ wpg_lock_path }}'"
   become: false
   when:
     - wpgtk_available | default(false)

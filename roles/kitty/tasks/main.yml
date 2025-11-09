@@ -104,6 +104,38 @@
   become: false
   when: wpgtk_install_templates | bool
 
+- name: Escape kitty template variable {title} for wpgtk
+  replace:
+    path: "{{ kitty_config_dir }}/kitty.conf"
+    regexp: '(\{title\})'
+    replace: '{{ "{{title}}" }}'
+  become: false
+  when: wpgtk_install_templates | bool
+
+- name: Escape kitty template variable {index} for wpgtk
+  replace:
+    path: "{{ kitty_config_dir }}/kitty.conf"
+    regexp: '(\{index\})'
+    replace: '{{ "{{index}}" }}'
+  become: false
+  when: wpgtk_install_templates | bool
+
+- name: Escape kitty template variable {HOME} for wpgtk
+  replace:
+    path: "{{ kitty_config_dir }}/kitty.conf"
+    regexp: '(\{HOME\})'
+    replace: '{{ "{{HOME}}" }}'
+  become: false
+  when: wpgtk_install_templates | bool
+
+- name: Escape kitty template variable {MYVAR1} for wpgtk
+  replace:
+    path: "{{ kitty_config_dir }}/kitty.conf"
+    regexp: '(\{MYVAR1\})'
+    replace: '{{ "{{MYVAR1}}" }}'
+  become: false
+  when: wpgtk_install_templates | bool
+
 - name: Register kitty.conf as wpgtk template
   command: "{{ wpg_binary }} -ta {{ kitty_config_dir }}/kitty.conf"
   become: false

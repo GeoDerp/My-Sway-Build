@@ -20,7 +20,7 @@ ansible-galaxy collection install -r requirements.yml
 
 # Run the Ansible playbook
 make install
-# Or: sudo ansible-playbook  playbook.yml  -e user_home=/var/home/$USER -e target_user=$USER
+# Or: ansible-playbook  playbook.yml  -e user_home=/var/home/$USER -e target_user=$USER
 ```
 
 For detailed installation instructions, configuration options, and troubleshooting, see [ANSIBLE_README.md](ANSIBLE_README.md).
