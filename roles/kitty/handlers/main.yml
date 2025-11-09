@@ -1,4 +1,8 @@
 ---
+# Handler for wpgtk theme reapplication after kitty config changes
+# Uses --noreload to prevent unnecessary UI reloads during Ansible runs
+# This is duplicated across roles to maintain role independence, though
+# the logic is identical. Each role can be used independently.
 - name: Reapply wpgtk theme
   shell: |
     current=$({{ wpg_binary }} -c)
