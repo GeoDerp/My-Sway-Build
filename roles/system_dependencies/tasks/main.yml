@@ -23,6 +23,25 @@
     - ansible_facts['distribution'] == 'Fedora'
     - system_pkg_mgr in dnf_like_pkg_mgrs
   become: true
+  
+- name: "Preflight: detect whether sudo will be non-interactive"
+  ansible.builtin.command:
+    cmd: sudo -n true
+  register: sudo_noninteractive_check
+  changed_when: false
+  failed_when: false
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
+
+- name: Warn if sudo requires a password (rpm-ostree)
+  ansible.builtin.debug:
+    msg: "Sudo may require a password; re-run with --ask-become-pass or configure passwordless sudo for non-interactive installs."
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
+    - sudo_noninteractive_check is defined
+    - sudo_noninteractive_check.rc != 0
 
 - name: Layer base system dependencies (rpm-ostree)
   community.general.rpm_ostree_pkg:
@@ -49,6 +68,7 @@
     - not skip_system_dependencies | bool
   become: true
   register: rpm_ostree_install
+  changed_when: rpm_ostree_install.stdout is defined and ('Staging deployment' in rpm_ostree_install.stdout or 'Upgraded' in rpm_ostree_install.stdout)
 
 - name: Notify user about reboot requirement (rpm-ostree)
   ansible.builtin.debug:
