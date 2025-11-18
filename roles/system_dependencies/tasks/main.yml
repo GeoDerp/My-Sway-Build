@@ -24,32 +24,31 @@
     - system_pkg_mgr in dnf_like_pkg_mgrs
   become: true
 
-- name: Check for missing packages (rpm-ostree)
-  ansible.builtin.shell: |
-    packages="swaylock swayidle waybar python3 ImageMagick brightnessctl playerctl grim slurp wf-recorder wl-clipboard mako git fontawesome-fonts gnome-themes-extra"
-    missing=""
-    for pkg in $packages; do
-      if ! rpm -q "$pkg" &>/dev/null; then
-        missing="$missing $pkg"
-      fi
-    done
-    echo "$missing"
-  register: missing_packages
-  changed_when: false
-  when:
-    - ansible_facts['distribution'] == 'Fedora'
-    - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
-
 - name: Layer base system dependencies (rpm-ostree)
-  ansible.builtin.command:
-    cmd: "rpm-ostree install{{ missing_packages.stdout }}"
+  community.general.rpm_ostree_pkg:
+    name:
+      - swaylock
+      - swayidle
+      - waybar
+      - python3
+      - ImageMagick
+      - brightnessctl
+      - playerctl
+      - grim
+      - slurp
+      - wf-recorder
+      - wl-clipboard
+      - mako
+      - git
+      - fontawesome-fonts
+      - gnome-themes-extra
+    state: present
   when:
     - ansible_facts['distribution'] == 'Fedora'
     - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
-    - missing_packages.stdout | trim | length > 0
+    - not skip_system_dependencies | bool
   become: true
   register: rpm_ostree_install
-  changed_when: "'Staging deployment' in rpm_ostree_install.stdout or 'Upgraded' in rpm_ostree_install.stdout"
 
 - name: Notify user about reboot requirement (rpm-ostree)
   ansible.builtin.debug:
