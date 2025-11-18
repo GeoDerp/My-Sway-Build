@@ -17,6 +17,7 @@
     - ansible_facts['distribution'] == 'Fedora'
     - system_pkg_mgr in rpm_ostree_like_pkg_mgrs
     - not skip_system_dependencies | bool
+    - "(sudo_noninteractive_check is defined and sudo_noninteractive_check.rc == 0) or ansible_become_pass is defined"
   become: true
 
 - name: Install ulauncher (Ubuntu/Debian)
