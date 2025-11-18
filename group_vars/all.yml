@@ -9,8 +9,8 @@ config_dir: "{{ user_home }}/.config"
 skip_system_dependencies: false
 
 # Package manager detection
-raw_pkg_mgr: "{{ ansible_facts.get('pkg_mgr', ansible_pkg_mgr | default('')) }}"
-system_pkg_mgr: "{{ raw_pkg_mgr | default('') | lower }}"
+detected_pkg_mgr: "{{ ansible_pkg_mgr | default('') }}"
+system_pkg_mgr: "{{ detected_pkg_mgr | lower }}"
 rpm_ostree_like_pkg_mgrs:
   - rpm-ostree
   - atomic_container

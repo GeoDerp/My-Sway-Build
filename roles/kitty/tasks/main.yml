@@ -92,7 +92,7 @@
   replace:
     path: "{{ kitty_config_dir }}/kitty.conf"
     regexp: '(\{\{\{)'
-    replace: '{{ "{{{{" }}'
+    replace: '{{ "{{" }}{{ "{{" }}'
   become: false
   when: wpgtk_install_templates | bool
 
@@ -100,7 +100,7 @@
   replace:
     path: "{{ kitty_config_dir }}/kitty.conf"
     regexp: '(\}\}\})'
-    replace: '{{ "}}}}" }}'
+    replace: '{{ "}}" }}{{ "}}" }}'
   become: false
   when: wpgtk_install_templates | bool
 

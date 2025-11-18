@@ -23,12 +23,30 @@
     - "{{ user_local_bin }}"
   become: false
 
+# SECURITY NOTE: Downloading and executing scripts from the internet is a security risk.
+# The uv installer is downloaded and executed. For maximum security, users should
+# verify the installer script before execution. See: https://astral.sh/uv/
+- name: Download uv install script
+  get_url:
+    url: https://astral.sh/uv/install.sh
+    dest: /tmp/uv_install.sh
+    mode: '0755'
+  when: uv_installed.rc != 0 and not uv_binary_stat.stat.exists
+  become: false
+
 - name: Install uv if not present
-  shell: curl -LsSf https://astral.sh/uv/install.sh | sh
+  shell: sh /tmp/uv_install.sh
   when: uv_installed.rc != 0 and not uv_binary_stat.stat.exists
   become: false
   args:
     creates: "{{ uv_binary }}"
+
+- name: Remove uv install script
+  file:
+    path: /tmp/uv_install.sh
+    state: absent
+  when: uv_installed.rc != 0 and not uv_binary_stat.stat.exists
+  become: false
 
 - name: Install wpgtk via uv tool
   command: uv tool install wpgtk

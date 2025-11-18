@@ -11,10 +11,9 @@ set $mod Mod1
 set $alt shift
 
 # Wallpaper configuration (wpgtk managed)
-# /var/home/geo/.config/wpg/wallpapers/lomig-gautier-Z2UGiPLrkPc-unsplash.jpg is replaced by wpgtk when applying theme
 # {wallpaper} is replaced by wpgtk when applying theme
 set $wall {wallpaper}
-set $lock {wallpaper}.lock.png  # .lock is the name convention for the generated blurred image
+set $lock {wallpaper}.lock.png  # .lock.png is the naming convention for the generated blurred image
 
 # Swaylock configuration (wpgtk managed colors)
 # Clean, minimal design matching the rest of the system
@@ -366,7 +365,7 @@ include /etc/sway/config.d/*
 exec ulauncher
 
 # Idle and lock configuration
-exec_always pkill swayidle; exec swayidle -w timeout 300 "$swaylock" timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep "$swaylock"
+exec_always pgrep swayidle || exec swayidle -w timeout 300 "$swaylock" timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep "$swaylock"
 
 # Running Waybar (SwayBar alternative)
 bar {{

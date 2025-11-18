@@ -29,7 +29,7 @@
     packages="swaylock swayidle waybar python3 ImageMagick brightnessctl playerctl grim slurp wf-recorder wl-clipboard mako git fontawesome-fonts gnome-themes-extra"
     missing=""
     for pkg in $packages; do
-      if ! rpm -q "$pkg" &>/dev/null && ! rpm-ostree status | grep -qw "$pkg"; then
+      if ! rpm -q "$pkg" &>/dev/null; then
         missing="$missing $pkg"
       fi
     done

@@ -81,11 +81,22 @@
 - name: Create blurred lock screen wallpaper using imagemagick
   command: "magick '{{ wpg_wallpaper_source | default(wpg_wallpaper_path) }}' -gaussian-blur 0x7 '{{ wpg_lock_path }}'"
   become: false
+  register: magick_result
+  changed_when: lock_file_after.stat.exists
   when:
     - wpgtk_available | default(false)
     - wallpaper_file.stat.exists | default(false)
     - not (lock_file.stat.exists | default(false))
 
+
+- name: Check if blurred lock wallpaper exists after magick
+  stat:
+    path: "{{ wpg_lock_path }}"
+  register: lock_file_after
+  become: false
+  when:
+    - wpgtk_available | default(false)
+    - wpg_lock_path is defined
 - name: Remove old wpgtk sway template base file
   file:
     path: "{{ user_home }}/.config/wpg/templates/config_sway_config.base"
