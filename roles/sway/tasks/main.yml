@@ -1,4 +1,18 @@
 ---
+- name: Ensure user local bin directory exists
+  file:
+    path: "{{ user_local_bin }}"
+    state: directory
+    mode: '0755'
+  become: false
+
+- name: Install swaylock-smart wrapper script
+  copy:
+    src: swaylock-smart
+    dest: "{{ user_local_bin }}/swaylock-smart"
+    mode: '0755'
+  become: false
+
 - name: Check if wpg binary is available
   stat:
     path: "{{ wpg_binary }}"
@@ -82,7 +96,7 @@
   command: "magick '{{ wpg_wallpaper_source | default(wpg_wallpaper_path) }}' -gaussian-blur 0x7 '{{ wpg_lock_path }}'"
   become: false
   register: magick_result
-  changed_when: lock_file_after.stat.exists
+  changed_when: true
   when:
     - wpgtk_available | default(false)
     - wallpaper_file.stat.exists | default(false)

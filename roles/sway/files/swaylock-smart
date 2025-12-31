@@ -1,0 +1,35 @@
+#!/bin/bash
+# Wrapper for swaylock to fallback to solid color if image is missing
+# Usage: swaylock-smart <image_path> [swaylock_options...]
+
+# Log output for debugging
+LOG_FILE="/tmp/swaylock-smart.log"
+exec 2>>"$LOG_FILE"
+echo "[$(date)] Running swaylock-smart with args: $@" >> "$LOG_FILE"
+
+IMAGE_PATH="$1"
+shift
+
+# Check if swaylock is in PATH, if not try standard locations
+SWAYLOCK_BIN=$(command -v swaylock)
+if [ -z "$SWAYLOCK_BIN" ]; then
+    if [ -x /usr/bin/swaylock ]; then
+        SWAYLOCK_BIN=/usr/bin/swaylock
+    elif [ -x /usr/local/bin/swaylock ]; then
+        SWAYLOCK_BIN=/usr/local/bin/swaylock
+    else
+        echo "[$(date)] Error: swaylock binary not found!" >> "$LOG_FILE"
+        exit 1
+    fi
+fi
+
+if [ -f "$IMAGE_PATH" ]; then
+    # Image exists, use it
+    echo "[$(date)] Image found: $IMAGE_PATH" >> "$LOG_FILE"
+    exec "$SWAYLOCK_BIN" -i "$IMAGE_PATH" "$@"
+else
+    # Image missing, use black background
+    echo "[$(date)] Image missing: $IMAGE_PATH. Fallback to black." >> "$LOG_FILE"
+    # We use a black color and pass the rest of the styling options
+    exec "$SWAYLOCK_BIN" -c 000000 "$@"
+fi
